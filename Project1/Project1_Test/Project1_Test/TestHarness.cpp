@@ -1,8 +1,9 @@
 //
 // Created by John Schurman on 4/15/19.
 //
-
 #include "TestHarness.h"
+
+
 void TestHarness::printLevelOneLog() {
     int i=1;
     for(bool b : levelOne){

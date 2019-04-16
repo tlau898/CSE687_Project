@@ -1,6 +1,5 @@
 // Project1_Test.cpp : Defines the entry point for the console application.
 //
-
 #include<iostream>
 using namespace std;
 
@@ -12,7 +11,7 @@ using namespace std;
 #include <vector>
 #include <bitset>
 #include <ctime>
-#include <unistd.h>
+//#include <unistd.h>
 
 /*
  * structs used for demonstrating bad cast error

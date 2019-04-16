@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <vector>
 #include <string>
+#include <ctime>
 
 #include <sstream>
 using std::cout;
