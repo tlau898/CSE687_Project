@@ -56,6 +56,13 @@ public:
     //print level three log
     void printLevelThreeLog();
 
+
+    /*
+    * will only return true if all of test cases pass
+    * will still document results regardless
+    */
+
+
     template <class T>
     bool executor(T&);
 
@@ -63,7 +70,14 @@ public:
 
 
 
+
+
+
+
+
+
 };
+
 
 template<class T>
 bool TestHarness::executor(T & c)  {
