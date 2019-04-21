@@ -1,8 +1,0 @@
-.idea/
-CMakeLists.txt
-cmake-build-debug/
-targetver.h
-stdafx.cpp
-stdafx.h
-../../../.idea/
-main
