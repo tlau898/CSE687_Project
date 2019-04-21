@@ -21,9 +21,39 @@ using namespace std;
 #include <bitset>
 #include <ctime>
 
-
 typedef void (*generic_pointer)();
 typedef function<void()> lambda;
+/*
+ * Simple struct created to demonstrate the ability of functors to work
+ * in the executor method of the testHarness class
+ * Executor method will catch and document runtime error
+ */
+struct divideByZeroS{
+    int numerator = 10;
+    int denominator =0;
+    void operator()(){
+        if(denominator == 0){
+            throw runtime_error("Math error- tried to divide by 0");
+
+        }
+
+    }
+};
+/*
+ * simple struct to demonstrate executor ability to run functors
+ * Hello world should print to the screen
+ * executor method should pass
+ */
+struct printHelloS{
+    void operator()(){
+        cout<<"Hello world"<<endl;
+    }
+
+};
+
+
+
+
 
 /*
  * structs used for demonstrating bad cast error
@@ -32,6 +62,39 @@ typedef function<void()> lambda;
  */
 struct Foo { virtual ~Foo() {} };
 struct Bar { virtual ~Bar() {} };
+
+/*
+ * struct demonstrating a bad cast example
+ * should be caught an documented by executor method
+ */
+
+struct badCastS{
+    Bar b;
+
+    void operator()(){
+        Foo& f = dynamic_cast<Foo&>(b);
+
+    }
+};
+/*
+ * struct used to demonstrated outOFRange error using functors
+ * will be caught and documented by the executor method
+ */
+struct outOfRangeS{
+    vector<int> myvect;
+    void operator()(){
+        myvect.at(50)=30;
+    }
+
+};
+struct invalidArgS{
+    string invalArg = "10012";
+
+    void operator()(){
+        std::bitset<5> mybitset(invalArg);
+    }
+
+};
 
 
 /*
@@ -58,6 +121,8 @@ void outOfRangeF(){
 void badCastF(){
     Bar b;
     Foo& f = dynamic_cast<Foo&>(b);
+
+
 }
 
 /*
@@ -193,6 +258,35 @@ int main()
    testHarness.printLevelTwoLog();
    testHarness.printLevelThreeLog();
 
-   return 0;
+    cout << "\n\n\n" << endl;
+
+
+    cout << "******************************************" << endl;
+    cout << "*      TESTING LIST OF FUNCTOR CALLS      *" << endl;
+    cout << "******************************************" << endl;
+
+    list<lambda>testList3;
+    printHelloS printHelloS1;
+    divideByZeroS divideByZeroS1;
+    badCastS badCastS1;
+    outOfRangeS outOfRangeS1;
+    invalidArgS invalidArgS1;
+
+    testList3.emplace_back(printHelloS1);
+    testList3.emplace_back(divideByZeroS1);
+    testList3.emplace_back(badCastS1);
+    testList3.emplace_back(invalidArgS1);
+    testList3.emplace_back(outOfRangeS1);
+
+
+    testHarness.executor(testList3);
+    testHarness.printLevelOneLog();
+    testHarness.printLevelTwoLog();
+    testHarness.printLevelThreeLog();
+
+
+
+
+    return 0;
 }
 

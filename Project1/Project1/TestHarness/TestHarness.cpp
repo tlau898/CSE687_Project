@@ -112,8 +112,21 @@ std::string TestHarness::getCurrDateTime() {
    char buffer[80];
 
    time(&now);
-   localtime_s(&timeInfo, &now);
+   //localtime_s(&timeInfo,&now);
+   timeInfo=*localtime(&now);
    strftime(buffer, 80, "[%D-%T]", &timeInfo);
 
    return buffer;
+}
+
+/******************************************************************************************************************
+* Function: Copy constructor
+* Notes:    The copy constructor copies the values of the test logs
+*
+******************************************************************************************************************/
+TestHarness::TestHarness(const TestHarness &TH) {
+   levelOneLog = TH.levelOneLog;
+   levelTwoLog= TH.levelTwoLog;
+   levelThreeLog = TH.levelThreeLog;
+
 }

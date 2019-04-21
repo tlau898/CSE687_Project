@@ -20,11 +20,15 @@
 #include <iterator>
 #include <functional>
 #include <sstream>
+
 using namespace std;
 
 class TestHarness {
 
 public:
+    TestHarness()= default;
+    ~TestHarness()= default;
+    TestHarness(const TestHarness &TH);
 
    /* Routine to execute callable object and perform, logs status of execution */
    template <class T>
@@ -77,7 +81,7 @@ bool TestHarness::executor(list<T>& testList)
    levelThreeLog.clear();
 
    //Iterate over list of callable objects
-   for (list<T>::iterator i = testList.begin(); i != testList.end(); ++i)
+   for (typename list<T>::iterator i = testList.begin(); i != testList.end(); i++)
    {
       //Execute single callable object
       if (!execute(testNumber, *i))
@@ -94,9 +98,17 @@ bool TestHarness::execute(int testNumber, T& testCase)
 {
    try
    {
+       /*
+        * cannot put a functor into std::function, so we need
+        * to just call the testCase directly
+        */
       //Try to invoke callable object
-      function<void()> testFunction = testCase;
-      testFunction();
+      //function<void()> testFunction = testCase;
+      //testFunction();
+
+
+
+       testCase();
 
       //Log success, no exceptions
       logTestStatus(testNumber, true);
