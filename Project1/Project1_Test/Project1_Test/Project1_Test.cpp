@@ -11,9 +11,12 @@ using namespace std;
 #include <vector>
 #include <bitset>
 #include <ctime>
-//#include <unistd.h>
 
-typedef function<void()&> lam;
+#include "Node.h"
+#include "ExecTester.h"
+
+typedef void (*generic_pointer)();
+typedef function<void()> lambda;
 
 /*
  * structs used for demonstrating bad cast error
@@ -33,15 +36,35 @@ struct Bar { virtual ~Bar() {} };
 void printHelloF(){
     cout<<"Hello World"<<endl;
 }
+/*
+ * Simple function, printing my name to screen
+ * should pass executor function
+ */
+
+void printNameF(){
+    cout<<"Printing my name: "<<endl;
+}
+/*
+ * Function with out of range exception
+ * will be caught by executor function
+ */
 void outOfRangeF(){
     vector<int> myvect(20);
     myvect.at(21)=20;
 
 }
+/*
+ * function with bad cast
+ * will be caught by executor function
+ */
 void badCastF(){
     Bar b;
     Foo& f = dynamic_cast<Foo&>(b);
 }
+/*
+ * function that divides by zero
+ * will throw an error to be caught by executor funtion
+ */
 void divideByZeroF(){
     int numer =10;
     int denominator =0;
@@ -51,6 +74,9 @@ void divideByZeroF(){
     }
 
 }
+/*
+ *
+ */
 void invalidArgF(){
     string invalArg = "10012";
     std::bitset<5> mybitset (invalArg);
@@ -81,7 +107,7 @@ function<void()> divideByZero=[](){
  * Simple function to demonstrate the catching of a
  * out_of_range exception
  */
- function<void()> outOfRange =[](){
+function<void()> outOfRange =[](){
     vector<int> myvect(20);
     myvect.at(21)=20;
 };
@@ -110,78 +136,73 @@ function<void()> invalidArg=[](){
 int main()
 {
     /*
-     * Create a fill a vector of lambdas to demonstrate ability to test each
+     * creation of execTester
      */
 
-    vector<function<void()>> vector1;
-
-    vector1.push_back(printHello);
-    vector1.push_back(outOfRange);
-    vector1.push_back(invalidArg);
-    vector1.push_back(badCast);
-    vector1.push_back(divideByZero);
+    ExecTester<generic_pointer > * execTester = new ExecTester<generic_pointer >();
 
     /*
-    * Create a fill a vector of function pointers to demonstrate ability to test each
-    */
+     * insert function pointers into the execTester list
+     */
+    generic_pointer g1= printHelloF;
+    execTester->insert(g1);
 
-    vector<void(*)()> vector2;
-    void (*fcnPtr)() = printHelloF;
-    vector2.push_back(fcnPtr);
-
-   fcnPtr = outOfRangeF;
-   vector2.push_back(fcnPtr);
-
-    fcnPtr = invalidArgF;
-    vector2.push_back(fcnPtr);
-
-    fcnPtr = badCastF;
-    vector2.push_back(fcnPtr);
-
-    fcnPtr = divideByZeroF;
-    vector2.push_back(fcnPtr);
+    //function pointer 2
+    generic_pointer g2 = printNameF;
+    execTester->insert(g2);
 
 
+    //function pointer 3
+    generic_pointer g3 = badCastF;
+    execTester->insert(g3);
+
+    //function pointer 4
+    generic_pointer g4= outOfRangeF;
+    execTester->insert(g4);
+
+    //function pointer 5
+    generic_pointer g5 = divideByZeroF;
+    execTester->insert(g5);
 
 
-
-
-
+    //function pointer 6
+    generic_pointer g6 = badCastF;
+    execTester->insert(g6);
 
 
 
 
     TestHarness * testHarness1 = new TestHarness();
+    testHarness1->executor(*execTester);
 
-    for(int i=0;i<vector1.size();i++){
-        testHarness1->executor(vector1[i]);
-    }
 
     testHarness1->printLevelOneLog();
-    cout<<"----------------------------"<<endl;
+    cout<<"------------"<<endl;
     testHarness1->printLevelTwoLog();
-    cout<<"----------------------------"<<endl;
+    cout<<"---------------"<<endl;
     testHarness1->printLevelThreeLog();
 
 
 
-
     TestHarness * testHarness2 = new TestHarness();
-    cout<<"----------------------------"<<endl;
-    cout<<"Demonstrating the ability to loop through function pointers"<<endl;
 
+    ExecTester<lambda > * execTester2 = new ExecTester<lambda >();
 
+    execTester2->insert(printHello);
 
+    execTester2->insert(badCast);
+    execTester2->insert(divideByZero);
+    execTester2->insert(invalidArg);
+    execTester2->insert(outOfRange);
 
-    for(int i=0;i<vector2.size();i++){
-        testHarness2->executor(vector2[i]);
-    }
+    testHarness2->executor(*execTester2);
 
+    cout<<"\n\n---------TESTING LAMBDA's----------"<<endl;
 
     testHarness2->printLevelOneLog();
-    cout<<"----------------------------"<<endl;
+    cout<<"------------"<<endl;
     testHarness2->printLevelTwoLog();
-    cout<<"----------------------------"<<endl;
+    cout<<"---------------"<<endl;
     testHarness2->printLevelThreeLog();
 
 
@@ -190,35 +211,6 @@ int main()
 
 
 
-
-
-
-
-
-
-
-
-
-
-    /*
-    TestHarness *t = new TestHarness();
-    t->executor(printHello);
-
-    t->executor(divideByZero);
-    t->executor(badCast);
-    t->executor(outOfRange);
-
-    t->executor(invalidArg);
-    t->printLevelOneLog();
-    cout<<"------------------------"<<endl;
-    t->printLevelTwoLog();
-    cout<<"------------------------"<<endl;
-
-    t->printLevelThreeLog();*/
-
-
-
-
-   return 0;
+    return 0;
 }
 

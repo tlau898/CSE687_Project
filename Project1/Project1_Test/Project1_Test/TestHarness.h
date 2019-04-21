@@ -13,6 +13,8 @@
 #include <ctime>
 
 #include <sstream>
+#include "ExecTester.h"
+#include "Node.h"
 using std::cout;
 using std::endl;
 using std::vector;
@@ -22,17 +24,29 @@ private:
     //need place to store to free
     std::vector<char*> dateTimes;
 
+    //indicates the number of tests that have been done
+    //increments every time a function is error-checked
     int numTests;
+    //level one vector that holds success of each test
     std::vector<bool> levelOne;
+
+    //documents the success of each test, as well as the error message
     std::vector<std::string> levelTwo;
+
+    //documents the success of each test, as well as a time stamp and error message
     std::vector<std::string> levelThree;
 
+    /*
+     * helper function that returns the current date and time in the following format:
+     * M/D/Y-H:M:S
+     */
     std::string getCurrDateTime();
 
 
     //helper method to fill level two vector
     void fillLevelTwo(bool, const char *);
     //helper method to fill level three vector
+
     void fillLevelThree(bool,const char *,const std::string);
 public:
 
@@ -58,13 +72,22 @@ public:
 
 
     /*
-    * will only return true if all of test cases pass
-    * will still document results regardless
-    */
-
+     * overloaded executor function that only executes a single function
+     * returns true if the function is sucessful and false it is is not
+     */
 
     template <class T>
     bool executor(T&);
+
+    /*
+     * Overloaded exectuor function,
+     * takes a Template ExecutorTester function
+     * returns tru
+     */
+
+
+    template <class T>
+    bool executor(ExecTester<T> &);
 
 
 
@@ -77,7 +100,77 @@ public:
 
 
 };
+template <class T>
+bool TestHarness::executor(ExecTester<T> & list) {
+    bool foundError = false;
+    Node<T>* node = list.getHead();
+    while(node!= nullptr){
+        bool errorWithNode = false;
+        try{
+            numTests++;
 
+            node->data();
+        }catch (std::runtime_error& e ){
+
+
+            //std::cout<<"Exception occured: " <<e.what()<<std::endl;
+            levelOne.push_back(false);
+            //string to insert for level two
+            fillLevelTwo(false,e.what());
+
+
+            fillLevelThree(false, e.what(),"RUNTIME_ERROR");
+
+            foundError=true;
+            errorWithNode=true;
+
+        }
+        catch(std::exception& e) {
+
+
+
+            //std::cout<< e.what()<<std::endl;
+            levelOne.push_back(false);
+
+            //string to insert for level two
+            fillLevelTwo(false,e.what());
+
+            fillLevelThree(false, e.what(),"GENERAL_EXCEPTION");
+
+
+            foundError=true;
+            errorWithNode=true;
+
+        }
+        catch(...){
+            //cout<<"catching any exception missed"<<endl;
+            levelOne.push_back(false);
+
+            //string to insert for level two
+            const char* msg = "Unknown Exception caught";
+            fillLevelTwo(false,msg);
+
+            foundError=true;
+            errorWithNode=true;
+        }
+        if(!errorWithNode){
+            levelOne.push_back(true);
+
+
+            fillLevelTwo(true,"");
+
+            fillLevelThree(true, "","TEST_PASSED");
+        }
+
+        node=node->next;
+
+
+
+
+
+    }
+    return !foundError;
+}
 
 template<class T>
 bool TestHarness::executor(T & c)  {
