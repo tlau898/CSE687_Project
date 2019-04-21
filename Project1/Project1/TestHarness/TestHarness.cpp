@@ -17,10 +17,13 @@
 *
 ******************************************************************************************************************/
 void TestHarness::printLevelOneLog() {
-   cout << "_____LEVEL ONE STATUS LOG_____" << endl;
+   cout << "********************************" << endl;
+   cout << "*    LEVEL ONE STATUS LOG      *" << endl;
+   cout << "********************************" << endl;
    for (const std::string &s : levelOneLog) {
       cout << s << endl;
    }
+   cout << endl;
 }
 
 /******************************************************************************************************************
@@ -31,10 +34,13 @@ void TestHarness::printLevelOneLog() {
 *
 ******************************************************************************************************************/
 void TestHarness::printLevelTwoLog() {
-   cout << "_____LEVEL TWO STATUS LOG_____" << endl;
+   cout << "********************************" << endl;
+   cout << "*    LEVEL TWO STATUS LOG      *" << endl;
+   cout << "********************************" << endl;
    for(const std::string &s: levelTwoLog){
       cout<<s<<endl;
    }
+   cout << endl;
 }
 
 /******************************************************************************************************************
@@ -45,10 +51,13 @@ void TestHarness::printLevelTwoLog() {
 *
 ******************************************************************************************************************/
 void TestHarness::printLevelThreeLog() {
-   cout << "_____LEVEL THREE STATUS LOG_____" << endl;
+   cout << "********************************" << endl;
+   cout << "*    LEVEL THREE STATUS LOG    *" << endl;
+   cout << "********************************" << endl;
    for (const std::string &s : levelThreeLog) {
       cout << s << endl;
    }
+   cout << endl;
 }
 
 /******************************************************************************************************************
@@ -74,27 +83,31 @@ void TestHarness::logTestStatus(int testNumber, bool passed, string exMsg, strin
    std::string dateTime = getCurrDateTime();
    std::stringstream ss;
 
-   ss << "Test ";
+   ss << left << "TEST ";
    ss << std::to_string(testNumber) << ": ";
 
    if (passed) 
    {
-      ss << "passed ";
+      ss << setw(10) << "PASSED";
       levelOneLog.emplace_back(ss.str());
+
+      ss << setw(40) << "PASSED";
       levelTwoLog.emplace_back(ss.str());
+
+      ss << dateTime << " ";
+      ss << "PASSED";
       levelThreeLog.emplace_back(ss.str());
    }
    else 
    {
-      ss << "failed ";
+      ss << setw(10) << "FAILED";
       levelOneLog.emplace_back(ss.str());
 
-      ss << exMsg;
+      ss << setw(40) << exMsg;
       levelTwoLog.emplace_back(ss.str());
 
-      ss << " - ";
-      ss << exDetail << " ";
-      ss << dateTime;
+      ss << dateTime << " ";
+      ss << exDetail;
       levelThreeLog.emplace_back(ss.str());
    }
 }
@@ -112,8 +125,7 @@ std::string TestHarness::getCurrDateTime() {
    char buffer[80];
 
    time(&now);
-   //localtime_s(&timeInfo,&now);
-   timeInfo=*localtime(&now);
+   localtime_s(&timeInfo,&now);
    strftime(buffer, 80, "[%D-%T]", &timeInfo);
 
    return buffer;

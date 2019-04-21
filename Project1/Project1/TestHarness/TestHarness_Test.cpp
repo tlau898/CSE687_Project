@@ -34,29 +34,26 @@ struct divideByZeroS{
     void operator()(){
         if(denominator == 0){
             throw runtime_error("Math error- tried to divide by 0");
-
         }
-
     }
 };
+
 /*
- * simple struct to demonstrate executor ability to run functors
+ * Simple struct to demonstrate executor ability to run functors
  * Hello world should print to the screen
  * executor method should pass
  */
 struct printHelloS{
     void operator()(){
-        cout<<"Hello world"<<endl;
+        cout<<"Hello World (Functor)"<<endl;
     }
 
 };
 
 
 
-
-
 /*
- * structs used for demonstrating bad cast error
+ * Structs used for demonstrating bad cast error
  * should not be used in any other place except for
  * demonstrating proper catch of error
  */
@@ -64,10 +61,9 @@ struct Foo { virtual ~Foo() {} };
 struct Bar { virtual ~Bar() {} };
 
 /*
- * struct demonstrating a bad cast example
- * should be caught an documented by executor method
+ * Struct demonstrating a bad cast example
+ * should be caught and documented by executor method
  */
-
 struct badCastS{
     Bar b;
 
@@ -76,8 +72,9 @@ struct badCastS{
 
     }
 };
+
 /*
- * struct used to demonstrated outOFRange error using functors
+ * Struct used to demonstrated outOFRange error using functors
  * will be caught and documented by the executor method
  */
 struct outOfRangeS{
@@ -85,24 +82,22 @@ struct outOfRangeS{
     void operator()(){
         myvect.at(50)=30;
     }
-
 };
+
 struct invalidArgS{
     string invalArg = "10012";
 
     void operator()(){
         std::bitset<5> mybitset(invalArg);
     }
-
 };
-
 
 /*
  * Simple function, printing hello world to screen
  * should pass executor function
  */
 void printHelloF(){
-    cout<<"Hello World"<<endl;
+    cout<<"Hello World (Function Pointer)"<<endl;
 }
 
 /*
@@ -121,8 +116,6 @@ void outOfRangeF(){
 void badCastF(){
     Bar b;
     Foo& f = dynamic_cast<Foo&>(b);
-
-
 }
 
 /*
@@ -153,8 +146,7 @@ void invalidArgF(){
  * Lambda function to print hello world, should pass executor 
  */
 function<void()> printHello=[](){
-    cout<<"hello world"<<endl;
-
+    cout<<"Hello world (Lambda)"<<endl;
 };
 
 /*
@@ -169,7 +161,6 @@ function<void()> divideByZero=[](){
         //NOTE: c++ does not have a built-in divideByZero Exception
         throw runtime_error("Math error- tried to divide by 0");
     }
-
 };
 
 /*
@@ -188,12 +179,11 @@ function<void()> outOfRange =[](){
 function<void()> badCast=[](){
     Bar b;
     Foo& f = dynamic_cast<Foo&>(b);
-
 };
 
 /*
  * Lambda function for an invalid argument
- *The complier will compile because the type of the arugment for bitset is correct
+ * The complier will compile because the type of the arugment for bitset is correct
  * Will be invalid because the arugment must contain 1's and 0's
  * Thus, an exception should be caught by executor
  */
@@ -202,91 +192,133 @@ function<void()> invalidArg=[](){
     std::bitset<5> mybitset (invalArg);
 };
 
+
+/******************************************************************************************************************
+* Function: main
+* Notes:    This routine is meant to demonstrate the functionality of the TestHarness class. The TestHarness is
+*           tested with a list of function pointers, lambdas and functors as well a single object of each. Results
+*           are printed for the overall executor run as well as three levels of logging.
+*
+******************************************************************************************************************/
 int main()
 {
-   cout << "**********************************************" << endl;
-   cout << "*   TESTING LIST OF FUNCTION POINTER CALLS   *" << endl;
-   cout << "**********************************************" << endl;
    TestHarness testHarness = TestHarness();
-   list<generic_pointer> testList;
+   bool executorPassed;
 
-   /*
-   * insert function pointers into the execTester list
-   */
-   generic_pointer g1 = printHelloF;
-   testList.push_back(g1);
+   cout << "************************************************************************" << endl;
+   cout << "*                TESTING LIST OF FUNCTION POINTER CALLS                *" << endl;
+   cout << "************************************************************************" << endl;
 
-   //function pointer 2
-   generic_pointer g2 = badCastF;
-   testList.push_back(g2);
+   //Add function pointers to test list
+   list<generic_pointer> testList_FP;
+   testList_FP.push_back(printHelloF);
+   testList_FP.push_back(badCastF);
+   testList_FP.push_back(outOfRangeF);
+   testList_FP.push_back(divideByZeroF);
+   testList_FP.push_back(badCastF);
 
-   //function pointer 3
-   generic_pointer g3 = outOfRangeF;
-   testList.push_back(g3);
+   //Execute callable objects, print pass/fail status and test logs 
+   executorPassed = testHarness.executor(testList_FP);
+   cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
-   //function pointer 4
-   generic_pointer g4 = divideByZeroF;
-   testList.push_back(g4);
-
-   //function pointer 5
-   generic_pointer g5 = badCastF;
-   testList.push_back(g5);
-
-   //Execute callable objects, print results
-   testHarness.executor(testList);
    testHarness.printLevelOneLog();
    testHarness.printLevelTwoLog();
    testHarness.printLevelThreeLog();
    cout << "\n\n\n" << endl;
 
 
-   cout << "******************************************" << endl;
-   cout << "*      TESTING LIST OF LAMBDA CALLS      *" << endl;
-   cout << "******************************************" << endl;
-   list<lambda> testList2;
 
-   //Add lambda functions to list
-   testList2.push_back(badCast);
-   testList2.push_back(divideByZero);
-   testList2.push_back(invalidArg);
-   testList2.push_back(outOfRange);
-   testList2.push_back(printHello);
+   cout << "************************************************************************" << endl;
+   cout << "*                     TESTING LIST OF LAMBDA CALLS                     *" << endl;
+   cout << "************************************************************************" << endl;
 
-   //Execute callable objects, print results
-   testHarness.executor(testList2);
+   //Add lambda functions to test list
+   list<lambda> testList_LAM;
+   testList_LAM.push_back(badCast);
+   testList_LAM.push_back(divideByZero);
+   testList_LAM.push_back(invalidArg);
+   testList_LAM.push_back(outOfRange);
+   testList_LAM.push_back(printHello);
+
+   //Execute callable objects, print pass/fail status and test logs 
+   executorPassed = testHarness.executor(testList_LAM);
+   cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
+
    testHarness.printLevelOneLog();
    testHarness.printLevelTwoLog();
    testHarness.printLevelThreeLog();
-
-    cout << "\n\n\n" << endl;
-
-
-    cout << "******************************************" << endl;
-    cout << "*      TESTING LIST OF FUNCTOR CALLS      *" << endl;
-    cout << "******************************************" << endl;
-
-    list<lambda>testList3;
-    printHelloS printHelloS1;
-    divideByZeroS divideByZeroS1;
-    badCastS badCastS1;
-    outOfRangeS outOfRangeS1;
-    invalidArgS invalidArgS1;
-
-    testList3.emplace_back(printHelloS1);
-    testList3.emplace_back(divideByZeroS1);
-    testList3.emplace_back(badCastS1);
-    testList3.emplace_back(invalidArgS1);
-    testList3.emplace_back(outOfRangeS1);
-
-
-    testHarness.executor(testList3);
-    testHarness.printLevelOneLog();
-    testHarness.printLevelTwoLog();
-    testHarness.printLevelThreeLog();
+   cout << "\n\n\n" << endl;
 
 
 
+   cout << "************************************************************************" << endl;
+   cout << "*                    TESTING LIST OF FUNCTOR CALLS                     *" << endl;
+   cout << "************************************************************************" << endl;
 
-    return 0;
+   //Structure instantiations
+   list<lambda>testList_FUNC;
+   printHelloS printHelloS1;
+   divideByZeroS divideByZeroS1;
+   badCastS badCastS1;
+   outOfRangeS outOfRangeS1;
+   invalidArgS invalidArgS1;
+
+   //Add functors to list
+   testList_FUNC.emplace_back(divideByZeroS1);
+   testList_FUNC.emplace_back(badCastS1);
+   testList_FUNC.emplace_back(printHelloS1);
+   testList_FUNC.emplace_back(invalidArgS1);
+   testList_FUNC.emplace_back(outOfRangeS1);
+
+   //Execute callable objects, print pass/fail status and test logs 
+   executorPassed = testHarness.executor(testList_FUNC);
+   cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
+
+   testHarness.printLevelOneLog();
+   testHarness.printLevelTwoLog();
+   testHarness.printLevelThreeLog();
+   cout << "\n\n\n" << endl;
+
+
+
+   cout << "************************************************************************" << endl;
+   cout << "*                TESTING SINGLE FUNCTION POINTER CALL                  *" << endl;
+   cout << "************************************************************************" << endl;
+   executorPassed = testHarness.executor(printHelloF);
+   cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
+
+   testHarness.printLevelOneLog();
+   testHarness.printLevelTwoLog();
+   testHarness.printLevelThreeLog();
+   cout << "\n\n\n" << endl;
+
+
+
+   cout << "************************************************************************" << endl;
+   cout << "*                TESTING SINGLE LAMBDA CALL                            *" << endl;
+   cout << "************************************************************************" << endl;
+   executorPassed = testHarness.executor(badCast);
+   cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
+
+   testHarness.printLevelOneLog();
+   testHarness.printLevelTwoLog();
+   testHarness.printLevelThreeLog();
+   cout << "\n\n\n" << endl;
+
+
+
+   cout << "************************************************************************" << endl;
+   cout << "*                TESTING SINGLE FUNCTOR CALL                           *" << endl;
+   cout << "************************************************************************" << endl;
+   executorPassed = testHarness.executor(divideByZeroS());
+   cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
+
+   testHarness.printLevelOneLog();
+   testHarness.printLevelTwoLog();
+   testHarness.printLevelThreeLog();
+   cout << "\n\n\n" << endl;
+
+
+   return 0;
 }
 

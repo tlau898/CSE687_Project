@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include <iomanip>
 #include <exception>
 #include <stdexcept>
 #include <vector>
@@ -98,16 +99,7 @@ bool TestHarness::execute(int testNumber, T& testCase)
 {
    try
    {
-       /*
-        * cannot put a functor into std::function, so we need
-        * to just call the testCase directly
-        */
       //Try to invoke callable object
-      //function<void()> testFunction = testCase;
-      //testFunction();
-
-
-
        testCase();
 
       //Log success, no exceptions
