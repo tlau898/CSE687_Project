@@ -310,7 +310,7 @@ int main()
    cout << "************************************************************************" << endl;
    cout << "*                TESTING SINGLE FUNCTOR CALL                           *" << endl;
    cout << "************************************************************************" << endl;
-   executorPassed = testHarness.executor(divideByZeroS());
+   executorPassed = testHarness.executor(badCastS1);
    cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
    testHarness.printLevelOneLog();
