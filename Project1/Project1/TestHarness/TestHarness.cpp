@@ -20,7 +20,7 @@ void TestHarness::printLevelOneLog() {
    cout << "********************************" << endl;
    cout << "*    LEVEL ONE STATUS LOG      *" << endl;
    cout << "********************************" << endl;
-   for (const std::string &s : levelOneLog) {
+   for (const std::string &s : logger.getLevelOneLog()) {
       cout << s << endl;
    }
    cout << endl;
@@ -37,7 +37,7 @@ void TestHarness::printLevelTwoLog() {
    cout << "********************************" << endl;
    cout << "*    LEVEL TWO STATUS LOG      *" << endl;
    cout << "********************************" << endl;
-   for(const std::string &s: levelTwoLog){
+   for(const std::string &s: logger.getLevelTwoLog()){
       cout<<s<<endl;
    }
    cout << endl;
@@ -54,7 +54,7 @@ void TestHarness::printLevelThreeLog() {
    cout << "********************************" << endl;
    cout << "*    LEVEL THREE STATUS LOG    *" << endl;
    cout << "********************************" << endl;
-   for (const std::string &s : levelThreeLog) {
+   for (const std::string &s : logger.getLevelThreeLog()) {
       cout << s << endl;
    }
    cout << endl;
@@ -66,10 +66,11 @@ void TestHarness::printLevelThreeLog() {
 *           exception related parameters.
 *
 ******************************************************************************************************************/
-void TestHarness::logTestStatus(int testNumber, bool passed)
+
+/*void TestHarness::logTestStatus(int testNumber, bool passed)
 {
    logTestStatus(testNumber, passed, "", "");
-}
+}*/
 
 /******************************************************************************************************************
 * Function: logTestStatus (Overloaded)
@@ -78,6 +79,8 @@ void TestHarness::logTestStatus(int testNumber, bool passed)
 *           exception message and level three log adds execption category and timestamp.
 *
 ******************************************************************************************************************/
+
+/*
 void TestHarness::logTestStatus(int testNumber, bool passed, string exMsg, string exDetail)
 {
    std::string dateTime = getCurrDateTime();
@@ -110,7 +113,7 @@ void TestHarness::logTestStatus(int testNumber, bool passed, string exMsg, strin
       ss << exDetail;
       levelThreeLog.emplace_back(ss.str());
    }
-}
+}*/
 
 /******************************************************************************************************************
 * Function: printLevelThreeLog
@@ -119,17 +122,30 @@ void TestHarness::logTestStatus(int testNumber, bool passed, string exMsg, strin
 *           exception message, exception category and timestamp.
 *
 ******************************************************************************************************************/
+/*
+
 std::string TestHarness::getCurrDateTime() {
    struct tm timeInfo;
-   time_t now;
+   time_t now;/
    char buffer[80];
 
    time(&now);
    localtime_s(&timeInfo,&now);
-   strftime(buffer, 80, "[%D-%T]", &timeInfo);
+   strftime(buffer, 80, "[%D-%T]", &timeInfo);*/
+
+
+//COMMENT LINES BELOW OUT TO RUN PROGRAM
+   //UNCOMMENT WHAT I COMMENTED ABOVE
+/*
+   time(&now);
+   char *  buffer;
+   buffer = new char[80];
+   timeInfo = *localtime(&now);
+   strftime(buffer,80,"[%D-%T]",&timeInfo);
+
 
    return buffer;
-}
+}*/
 
 /******************************************************************************************************************
 * Function: Copy constructor
@@ -137,8 +153,11 @@ std::string TestHarness::getCurrDateTime() {
 *
 ******************************************************************************************************************/
 TestHarness::TestHarness(const TestHarness &TH) {
-   levelOneLog = TH.levelOneLog;
-   levelTwoLog= TH.levelTwoLog;
-   levelThreeLog = TH.levelThreeLog;
+   //levelOneLog = TH.levelOneLog;
+   //levelTwoLog= TH.levelTwoLog;
+   //levelThreeLog = TH.levelThreeLog;
+
+   this->logger = TH.logger;
+
 
 }
