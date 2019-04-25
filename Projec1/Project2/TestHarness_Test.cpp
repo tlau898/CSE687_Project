@@ -635,6 +635,7 @@ int main()
 	testHarness.printLevelThreeLog();
 
 	cout << "\n\n\n" << endl;
+	cout << "Hello world" << endl;
 
 
 
