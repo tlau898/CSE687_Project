@@ -438,19 +438,21 @@ int main()
 
 	//Execute callable objects, print pass/fail status and test logs 
 
-	executorPassed = testHarness.executor(testList_FP);
+	executorPassed = testHarness.test(testList_FP);
 
 	cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
 
 
-	testHarness.printLevelOneLog();
+	//testHarness.printLevelOneLog();
 
-	testHarness.printLevelTwoLog();
+	//testHarness.printLevelTwoLog();
 
 	testHarness.printLevelThreeLog();
 
 	cout << "\n\n\n" << endl;
+	/*
+	
 
 
 
@@ -484,7 +486,7 @@ int main()
 
 	//Execute callable objects, print pass/fail status and test logs 
 
-	executorPassed = testHarness.executor(testList_LAM);
+	executorPassed = testHarness.test(testList_LAM);
 
 	cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
@@ -497,7 +499,7 @@ int main()
 	testHarness.printLevelThreeLog();
 
 	cout << "\n\n\n" << endl;
-
+	
 
 
 
@@ -544,7 +546,7 @@ int main()
 
 	//Execute callable objects, print pass/fail status and test logs 
 
-	executorPassed = testHarness.executor(testList_FUNC);
+	executorPassed = testHarness.test(testList_FUNC);
 
 	cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
@@ -558,10 +560,10 @@ int main()
 
 	cout << "\n\n\n" << endl;
 
+	
 
 
-
-
+	
 
 
 	cout << "************************************************************************" << endl;
@@ -570,7 +572,7 @@ int main()
 
 	cout << "************************************************************************" << endl;
 
-	executorPassed = testHarness.executor(printHelloF);
+	executorPassed = testHarness.test(printHelloF);
 
 	cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
@@ -596,7 +598,7 @@ int main()
 
 	cout << "************************************************************************" << endl;
 
-	executorPassed = testHarness.executor(badCast);
+	executorPassed = testHarness.test(badCast);
 
 	cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
@@ -614,7 +616,7 @@ int main()
 
 
 
-
+	
 
 	cout << "************************************************************************" << endl;
 
@@ -622,7 +624,7 @@ int main()
 
 	cout << "************************************************************************" << endl;
 
-	executorPassed = testHarness.executor(badCastS1);
+	executorPassed = testHarness.test(badCastS1);
 
 	cout << "Executor " << (executorPassed ? "Passed" : "Failed") << "\n" << endl;
 
@@ -641,6 +643,6 @@ int main()
 
 
 
-	return 0;
+	return 0;*/
 
 }

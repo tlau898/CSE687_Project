@@ -42,7 +42,7 @@ void TestHarness::printLevelOneLog() {
 
 	cout << "********************************" << endl;
 
-	for (const std::string& s : logger.getLevelOneLog()) {
+	for (const std::string& s : executive.getLevelOneLog()) {
 
 		cout << s << endl;
 
@@ -68,6 +68,8 @@ void TestHarness::printLevelOneLog() {
 
 ******************************************************************************************************************/
 
+
+/*
 void TestHarness::printLevelTwoLog() {
 
 	cout << "********************************" << endl;
@@ -84,6 +86,22 @@ void TestHarness::printLevelTwoLog() {
 
 	cout << endl;
 
+}*/
+
+void TestHarness::printLevelTwoLog() {
+	cout << "********************************" << endl;
+
+	cout << "*    LEVEL TWO STATUS LOG      *" << endl;
+
+	cout << "********************************" << endl;
+
+	for (const std::string& s : executive.getLevelTwoLog()) {
+
+		cout << s << endl;
+
+	}
+
+	cout << endl;
 }
 
 
@@ -110,7 +128,7 @@ void TestHarness::printLevelThreeLog() {
 
 	cout << "********************************" << endl;
 
-	for (const std::string& s : logger.getLevelThreeLog()) {
+	for (const std::string& s : executive.getLevelThreeLog()) {
 
 		cout << s << endl;
 

@@ -47,7 +47,7 @@
 
 
 #include "Logger.h"
-
+#include "Executive.h"
 
 
 using namespace std;
@@ -91,10 +91,18 @@ public:
 	void printLevelThreeLog();
 
 
+	template <class T>
+	bool test(std::list<T>&);
+
+	template<class T>
+	bool test(T&);
+
+
 
 
 
 private:
+	Executive executive;
 
 	// std::vector<std::string> levelOneLog;   //Holds pass/fail status of executor call
 
@@ -126,7 +134,10 @@ private:
 
 };
 
-
+template <class T>
+bool TestHarness::test(std::list<T>& testList) {
+	return executive.executor(testList);
+}
 
 template<class T>
 
@@ -364,6 +375,10 @@ bool TestHarness::execute(int testNumber, T& testCase)
 
 	}
 
+}
+template<class T>
+bool TestHarness::test(T& testCase) {
+	return executive.executor(testCase);
 }
 
 
