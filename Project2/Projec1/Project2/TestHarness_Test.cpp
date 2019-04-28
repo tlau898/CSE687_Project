@@ -411,25 +411,25 @@ int main()
 	//bool executorPassed;
 
 	vector<LPCSTR>temp1;
-	temp1.emplace_back("C:\\Users\\jschu\\proj222\\Projec1\\Project2\\Debug\\MathLibrary.dll");
+	temp1.emplace_back("MathLibrary.dll");
 
 	temp1.emplace_back("printHelloF");
 	vector<LPCSTR>temp2;
-	temp2.emplace_back("C:\\Users\\jschu\\proj222\\Projec1\\Project2\\Debug\\MathLibrary.dll");;
+	temp2.emplace_back("MathLibrary.dll");;
 	temp2.emplace_back("outOfRangeF");
 
 	vector<LPCSTR>temp3;
-	temp3.emplace_back("C:\\Users\\jschu\\proj222\\Projec1\\Project2\\Debug\\MathLibrary.dll");;
+	temp3.emplace_back("MathLibrary.dll");;
 	temp3.emplace_back("invalidArgF");
 
 	vector<LPCSTR>temp4;
-	temp4.emplace_back("C:\\Users\\jschu\\proj222\\Projec1\\Project2\\Debug\\MathLibrary.dll");;
+	temp4.emplace_back("MathLibrary.dll");;
 	temp4.emplace_back("badCastF");
 
 
 
 	vector<LPCSTR>temp6;
-	temp6.emplace_back("C:\\Users\\jschu\\proj222\\Projec1\\Project2\\Debug\\MathLibrary.dll");;
+	temp6.emplace_back("MathLibrary.dll");;
 	temp6.emplace_back("divideByZeroF");
 
 	vector<vector<LPCSTR>> vect;
