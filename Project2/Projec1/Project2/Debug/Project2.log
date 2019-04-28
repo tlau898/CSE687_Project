@@ -1,0 +1,9 @@
+﻿  Executive.cpp
+  Logger.cpp
+  TestDriver.cpp
+  TestHarness.cpp
+C:\Users\jschu\project2A\Project2\Projec1\Project2\TestHarness.cpp(26): warning C4018: '<': signed/unsigned mismatch
+  TestHarness_Test.cpp
+  Generating Code...
+  LINK : C:\Users\jschu\project2A\Project2\Projec1\Debug\Project2.exe not found or not built by the last incremental link; performing full link
+  Project2.vcxproj -> C:\Users\jschu\project2A\Project2\Projec1\Debug\Project2.exe
