@@ -22,16 +22,14 @@
 #include <functional>
 #include <sstream>
 
-#include "Logger.h"
-
 using namespace std;
 
 class TestHarness {
 
 public:
-    TestHarness()= default;
-    ~TestHarness()= default;
-    TestHarness(const TestHarness &);
+   TestHarness() = default;
+   ~TestHarness() = default;
+   TestHarness(const TestHarness &TH);
 
    /* Routine to execute callable object and perform, logs status of execution */
    template <class T>
@@ -41,37 +39,32 @@ public:
    template <class T>
    bool executor(list<T> &);
 
-   void printLevelOneLog();    
+   void printLevelOneLog();
    void printLevelTwoLog();
    void printLevelThreeLog();
 
 
 private:
-   // std::vector<std::string> levelOneLog;   //Holds pass/fail status of executor call
-   // std::vector<std::string> levelTwoLog;   //Holds pass/fail, error message of executor call
-   // std::vector<std::string> levelThreeLog; //Holds pass/fail, error message, time stamp of executor call
-  //  std::string getCurrDateTime();          //Get current date/time in M/D/Y-H:M:S
+   std::vector<std::string> levelOneLog;   //Holds pass/fail status of executor call
+   std::vector<std::string> levelTwoLog;   //Holds pass/fail, error message of executor call
+   std::vector<std::string> levelThreeLog; //Holds pass/fail, error message, time stamp of executor call
+   std::string getCurrDateTime();          //Get current date/time in M/D/Y-H:M:S
 
-    //Invoked by executor, logs status for the execution of a callable object
-    //void logTestStatus(int testNumber, bool passed);
-   // void logTestStatus(int testNumber, bool passed, string exMsg, string exDetail);
+                                           //Invoked by executor, logs status for the execution of a callable object
+   void logTestStatus(int testNumber, bool passed);
+   void logTestStatus(int testNumber, bool passed, string exMsg, string exDetail);
 
-
-    Logger logger;
-
-    template <class T>
-    bool execute(int testNumber, T& testCase); //Performs execution of callable object
+   template <class T>
+   bool execute(int testNumber, T& testCase); //Performs execution of callable object
 };
 
 template<class T>
-bool TestHarness::executor(T& testCase)  
+bool TestHarness::executor(T& testCase)
 {
    //Clear logs from previous Executor run
-  // levelOneLog.clear();
-  // levelTwoLog.clear();
-   //levelThreeLog.clear();
-
-   logger.clear();
+   levelOneLog.clear();
+   levelTwoLog.clear();
+   levelThreeLog.clear();
 
    //Execute single callable object
    return execute(1, testCase);
@@ -82,21 +75,18 @@ bool TestHarness::executor(list<T>& testList)
 {
    bool executorPassing = true;
    int testNumber = 1;
-   logger.clear();
 
    //Clear logs from previous Executor run
-   //levelOneLog.clear();
-   //levelTwoLog.clear();
-   //levelThreeLog.clear();
-
+   levelOneLog.clear();
+   levelTwoLog.clear();
+   levelThreeLog.clear();
 
    //Iterate over list of callable objects
    for (typename list<T>::iterator i = testList.begin(); i != testList.end(); i++)
    {
       //Execute single callable object
-      if (!execute(testNumber, *i)) {
+      if (!execute(testNumber, *i))
          executorPassing = false;
-      }
       testNumber++;
    }
 
@@ -110,75 +100,55 @@ bool TestHarness::execute(int testNumber, T& testCase)
    try
    {
       //Try to invoke callable object
-       testCase();
+      testCase();
 
       //Log success, no exceptions
-      //logTestStatus(testNumber, true);
-      logger.logTestStatus(testNumber,true);
+      logTestStatus(testNumber, true);
       return true;
    }
 
    catch (std::runtime_error& e) {
-      //logTestStatus(testNumber, false, e.what(), "RUNTIME_ERROR");
-
-      logger.logTestStatus(testNumber, false, e.what(), "RUNTIME_ERROR");
-
+      logTestStatus(testNumber, false, e.what(), "RUNTIME_ERROR");
       return false;
    }
 
    catch (std::bad_cast& e) {
-      //logTestStatus(testNumber, false, e.what(), "BAD_CAST");
-      logger.logTestStatus(testNumber, false, e.what(), "BAD_CAST");
+      logTestStatus(testNumber, false, e.what(), "BAD_CAST");
       return false;
    }
 
    catch (std::bad_typeid& e) {
-      //logTestStatus(testNumber, false, e.what(), "BAD_TYPEID");
-
-
-      logger.logTestStatus(testNumber, false, e.what(), "BAD_TYPEID");
+      logTestStatus(testNumber, false, e.what(), "BAD_TYPEID");
       return false;
    }
 
    catch (std::bad_alloc& e) {
-      //logTestStatus(testNumber, false, e.what(), "BAD_ALLOC");
-
-      logger.logTestStatus(testNumber, false, e.what(), "BAD_ALLOC");
+      logTestStatus(testNumber, false, e.what(), "BAD_ALLOC");
       return false;
    }
 
    catch (std::out_of_range& e) {
-      //logTestStatus(testNumber, false, e.what(), "OUT_OF_RANGE");
-
-      logger.logTestStatus(testNumber, false, e.what(), "OUT_OF_RANGE");
+      logTestStatus(testNumber, false, e.what(), "OUT_OF_RANGE");
       return false;
    }
 
    catch (std::invalid_argument &e) {
-     // logTestStatus(testNumber, false, e.what(), "INVALID_ARGUMENT");
-
-      logger.logTestStatus(testNumber, false, e.what(), "INVALID_ARGUMENT");
+      logTestStatus(testNumber, false, e.what(), "INVALID_ARGUMENT");
       return false;
    }
 
    catch (std::logic_error &e) {
-      //logTestStatus(testNumber, false, e.what(), "LOGIC_ERROR");
-
-      logger.logTestStatus(testNumber, false, e.what(), "LOGIC_ERROR");
+      logTestStatus(testNumber, false, e.what(), "LOGIC_ERROR");
       return false;
    }
 
    catch (std::exception& e) {
-     // logTestStatus(testNumber, false, e.what(), "GENERAL_EXCEPTION");
-
-      logger.logTestStatus(testNumber, false, e.what(), "GENERAL_EXCEPTION");
+      logTestStatus(testNumber, false, e.what(), "GENERAL_EXCEPTION");
       return false;
    }
 
    catch (...) {
-      //logTestStatus(testNumber, false, "Unknown", "Unknown Exception caught");
-
-      logger.logTestStatus(testNumber, false, "unknown","Unknown exception caught");
+      logTestStatus(testNumber, false, "Unknown", "Unknown Exception caught");
       return false;
    }
 }
