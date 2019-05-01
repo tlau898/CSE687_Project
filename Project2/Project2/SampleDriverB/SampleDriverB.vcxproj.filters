@@ -17,15 +17,9 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\TestDriver\TestDriver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SampleDriverB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\TestDriver\TestDriver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

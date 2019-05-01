@@ -7,7 +7,7 @@
    #define DLLEXPORT __declspec(dllimport)
 #endif
 
-#include "../TestDriver/TestDriver.h"
+#include "../TestDriverFactory/TestDriverFactory.h"
 
 class SampleDriverA : public ITest
 {

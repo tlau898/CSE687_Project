@@ -144,11 +144,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\TestDriver\TestDriver.cpp" />
+    <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp" />
     <ClCompile Include="SandBox.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\TestDriver\TestDriver.h" />
+    <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

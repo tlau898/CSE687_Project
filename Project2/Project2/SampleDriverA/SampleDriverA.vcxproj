@@ -148,11 +148,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\TestDriver\TestDriver.h" />
     <ClInclude Include="SampleDriverA.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\TestDriver\TestDriver.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="SampleDriverA.cpp" />
   </ItemGroup>

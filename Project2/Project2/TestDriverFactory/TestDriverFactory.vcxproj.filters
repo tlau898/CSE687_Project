@@ -11,12 +11,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestDriver.cpp">
+    <ClCompile Include="TestDriverFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TestDriver.h">
+    <ClInclude Include="TestDriverFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

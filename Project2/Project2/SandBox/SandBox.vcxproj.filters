@@ -6,19 +6,19 @@
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{e2825a3a-4f73-40c8-9c94-d1712ac58c97}</UniqueIdentifier>
+      <UniqueIdentifier>{c84e00b2-8cde-4958-9bd7-d2989ee553a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SandBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\TestDriver\TestDriver.cpp">
+    <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\TestDriver\TestDriver.h">
+    <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
