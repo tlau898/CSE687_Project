@@ -23,10 +23,15 @@
 // Author:        John Schurman, Terence Lau                                        //
 //////////////////////////////////////////////////////////////////////////////////////
 
+struct ITest
+{
+   virtual bool RunTest() = 0;
+};
+
 class TestFactory
 {
 public:
-   void CreateTestDriver(std::string testDriverName);
+   ITest* CreateTestDriver(std::string testDriverName);
    static TestFactory* Instance();
 
 private:
@@ -35,11 +40,6 @@ private:
    TestFactory& operator=(TestFactory const&){};
    static TestFactory* p_factInstance;
 
-};
-
-struct ITest
-{
-   virtual bool RunTest() = 0;
 };
 
 class Example : public ITest
