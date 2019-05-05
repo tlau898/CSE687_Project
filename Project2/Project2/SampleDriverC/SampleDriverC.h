@@ -1,7 +1,7 @@
-#ifndef SAMPLEDRIVERB_H
-#define SAMPLEDRIVERB_H
+#ifndef SAMPLEDRIVERC_H
+#define SAMPLEDRIVERC_H
 
-#ifdef SAMPLEDRIVERB_EXPORTS
+#ifdef SAMPLEDRIVERC_EXPORTS
 #define DLLEXPORT __declspec(dllexport)
 #else
 #define DLLEXPORT __declspec(dllimport)
@@ -9,11 +9,11 @@
 
 #include "../TestDriverFactory/TestDriverFactory.h"
 
-class SampleDriverB : public ITest
+class SampleDriverC : public ITest
 {
 public:
    bool RunTest();
-   ~SampleDriverB();
+   ~SampleDriverC();
 
 private:
 };
