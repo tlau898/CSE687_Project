@@ -1,21 +1,16 @@
-#pragma once
-
 #ifndef EXECUTIVE_H
 #define EXECUTIVE_H
 
-
-
-#include <iomanip>
-#include <exception>
-#include <stdexcept>
-#include <vector>
+///////////////////////////////////////////////////////////////////////////////////////////
+// Executive.h - Defines Executive class which is meant to demonstrate the capabilities  //
+//               of the TestHarness class.                                               //
+// ver 1.0                                                                               //
+// Language:      Visual C++ 2010, SP1                                                   //
+// Application:   Project 1 CSE 687                                                      //
+// Author:        John Schurman, Terence Lau                                             //
+///////////////////////////////////////////////////////////////////////////////////////////
 #include <string>
-#include <ctime>
 #include <list>
-#include <iterator>
-#include <functional>
-#include <sstream>
-
 #include "../TestHarness/TestHarness.h"
 
 using namespace std;
@@ -23,7 +18,6 @@ using namespace std;
 class Executive
 {
 public:
-
    void CreateTests(string xmlTestRequest);
    void RunSampleTestSequence();
 
