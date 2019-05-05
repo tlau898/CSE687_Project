@@ -1,14 +1,15 @@
 #ifndef TESTHARNESS_H
 #define TESTHARNESS_H
-//////////////////////////////////////////////////////////////////////////////////////
-// TestHarness.h - Implements TestHarness class that defines methods to invoke      //
-//                 a passed callable object or a list of callable objects. Results  //
-//                 are logged and available at three different levels of verbosity. //
-// ver 1.0                                                                          //
-// Language:      Visual C++ 2010, SP1                                              //
-// Application:   Project 1 CSE 687                                                 //
-// Author:        John Schurman, Terence Lau                                        //
-//////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+// TestHarness.h - Implements TestHarness class that defines methods to add, clear    //
+//                 and invoke a list of tests. Tests are created by parsing a test    //
+//                 request and instatiating test driver objects. Test result logs     //
+//                 are held by Logger object.                                         //
+// ver 2.0                                                                            //
+// Language:      Visual C++ 2010, SP1                                                //
+// Application:   Project 1 CSE 687                                                   //
+// Author:        Terence Lau, John Schurman                                          //
+////////////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <iomanip>
@@ -39,18 +40,17 @@ public:
    template <class T>
    bool executor(list<T> &);
 
-   void AddTest(string testRequest);
-   void AddTests(string xmlTestRequest);
-   void ClearTestList();
-   void RunTestList();
-
-   void printLevelOneLog();
-   void printLevelTwoLog();
-   void printLevelThreeLog();
+   void addTests(string xmlTestRequest);      //Parse XML request, create tests
+   void addTest(string testRequest);          //Create test from testDriver name
+   void clearTestList();                      //Clear tests, free objects
+   void runTestList();                        //Run through list of tests
+   void printLevelOneLog();                   //Print last results of runTestList, lvl1
+   void printLevelTwoLog();                   //Print last results of runTestList, lvl2
+   void printLevelThreeLog();                 //Print last results of runTestList, lvl3
 
 private:
-   list<ITest*> testList;             //Holds List of tests to be executed
-   Logger logger;
+   list<ITest*> testList;                     //Holds List of tests to be executed
+   Logger logger;                             //Performs logging functions
 
    template <class T>
    bool execute(int testNumber, T& testCase); //Performs execution of callable object

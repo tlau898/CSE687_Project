@@ -1,81 +1,148 @@
 ////////////////////////////////////////////////////////////////////////////////////////
-// TestHarness.cpp - Implements TestHarness class that defines methods to invoke      //
-//                   a passed callable object or a list of callable objects. Results  //
-//                   are logged and available at three different levels of verbosity. //
-// ver 1.0                                                                            //
+// TestHarness.cpp - Implements TestHarness class that defines methods to add, clear  //
+//                   and invoke a list of tests. Tests are created by parsing a test  //
+//                   request and instatiating test driver objects. Test result logs   //
+//                   are held by Logger object.                                       //
+// ver 2.0                                                                            //
 // Language:      Visual C++ 2010, SP1                                                //
 // Application:   Project 1 CSE 687                                                   //
-// Author:        John Schurman, Terence Lau                                          //
+// Author:        Terence Lau, John Schurman                                          //
 ////////////////////////////////////////////////////////////////////////////////////////
-
 #include "TestHarness.h"
 
-void TestHarness::AddTest(string testRequest)
+/******************************************************************************************************************
+* Function: addTests
+* Notes:    This function takes an xml string corresponding to a test request and parses for test driver dll 
+*           names. Each test driver dll name found is passed to addTest which will attempt to load the dll and
+*           create an instance of the test driver to add to the testList.
+*
+******************************************************************************************************************/
+void TestHarness::addTests(string xmlTestRequest)
 {
-   ITest* testDriverToAdd;
-   testDriverToAdd = TestFactory::Instance()->CreateTestDriver(testRequest);
-
-   if (testDriverToAdd != nullptr)
-   {
-      testList.emplace_back(testDriverToAdd);
-   }
-   else
-   {
-      cout << "Failed to load driver for " << testRequest << endl;
-   }
-}
-
-void TestHarness::AddTests(string xmlTestRequest)
-{
-   string startDelimiter = "<testelement>";
-   string stopDelimiter = "</testelement>";
+   string startDelimiter = "<testelement>"; //XML
+   string stopDelimiter = "</testelement>"; //XML
    size_t startIndex;
    size_t stopIndex;
    string testElementDLLName;
 
+   //Indexes used to extract info from XML
    startIndex = xmlTestRequest.find(startDelimiter);
    stopIndex = xmlTestRequest.find(stopDelimiter);
 
    while ((startIndex != string::npos) && (stopIndex != string::npos))
    {
+      //Extract test driver dll name, create test
       startIndex += startDelimiter.length();
       testElementDLLName = xmlTestRequest.substr(startIndex, stopIndex - startIndex);
-      AddTest(testElementDLLName);
+      addTest(testElementDLLName);
 
+      //Remove already parsed dll name from test request, move to next
       xmlTestRequest.erase(0, stopIndex + stopDelimiter.length());
       startIndex = xmlTestRequest.find(startDelimiter);
       stopIndex = xmlTestRequest.find(stopDelimiter);
    }
 }
 
-void TestHarness::ClearTestList()
+/******************************************************************************************************************
+* Function: addTest
+* Notes:    This function takes the name a test driver dll to instantiate and add to the testList. The TestFactory
+*           singleton is used to invoke the create function for the corresponding test driver object. If function
+*           fails to create test driver, error message is printed.
+*
+******************************************************************************************************************/
+void TestHarness::addTest(string testRequest)
+{
+   ITest* testDriverToAdd;
+
+   //Ivoke Factory method to create instance of test driver
+   testDriverToAdd = TestFactory::Instance()->CreateTestDriver(testRequest);
+
+   if (testDriverToAdd != nullptr)
+   {
+      //Test Driver created successfully
+      cout << "Created Test Driver " << testRequest << endl;
+      testList.emplace_back(testDriverToAdd);
+   }
+   else
+   {
+      //Test Driver failed to create, print error
+      cout << "Failed to load driver for " << testRequest << endl;
+   }
+}
+
+/******************************************************************************************************************
+* Function: clearTestList
+* Notes:    This function iterates through the testList and deletes the test driver instances that were created
+*           when adding tests. It then clears the test driver pointers from the testList.
+*
+******************************************************************************************************************/
+void TestHarness::clearTestList()
 {
    for (auto&& test : testList)
    {
+      //Free allocated objects
       delete test;
    }
    testList.clear();
 }
 
-void TestHarness::RunTestList()
+/******************************************************************************************************************
+* Function: runTestList
+* Notes:    This function iterates through the list of test driver objects in testList and creates a list of
+*           lambda functions corresponding to the runTest function defined by each test driver. The list of lambda
+*           functions is then invoked by executor. List of lambdas is necessary because pointers to member 
+*           function cannot be passed directly to executor.
+*
+******************************************************************************************************************/
+void TestHarness::runTestList()
 {
-   logger.clearlog();
+   list<function<bool()>> tList;
+
+   //Create list of lambdas 
    for (auto test : testList)
    {
-      test->RunTest();
+      //Create lambda for call to test driver RunTest()
+      tList.emplace_back([test]()->bool 
+      {
+         typedef bool (ITest::*RunTest)();
+         RunTest funcPtr = &ITest::RunTest;
+         return (test->*funcPtr)(); 
+      });
    }
+
+   //Clear log, execute tests
+   logger.clearlog();
+   executor(tList);
 }
 
+/******************************************************************************************************************
+* Function: printLevelOneLog
+* Notes:    This function prints the level one log results stored by the logger object. Log results are generated
+*           when invoking runTestList and cleared on subsequent invokations.
+*
+******************************************************************************************************************/
 void TestHarness::printLevelOneLog()
 {
    logger.printLevelOneLog();
 }
 
+/******************************************************************************************************************
+* Function: printLevelTwoLog
+* Notes:    This function prints the level two log results stored by the logger object. Log results are generated
+*           when invoking runTestList and cleared on subsequent invokations.
+*
+******************************************************************************************************************/
 void TestHarness::printLevelTwoLog()
 {
    logger.printLevelTwoLog();
 }
 
+/******************************************************************************************************************
+* Function: printLevelThreeLog
+* Notes:    This function prints the level three log results stored by the logger object. Log results are generated
+*           when invoking runTestList and cleared on subsequent invokations.
+*
+******************************************************************************************************************/
 void TestHarness::printLevelThreeLog()
 {
    logger.printLevelThreeLog();
