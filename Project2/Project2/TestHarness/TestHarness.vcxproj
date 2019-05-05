@@ -144,14 +144,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Logger\Logger.cpp" />
-    <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="TestDriverFactory.cpp" />
     <ClCompile Include="TestHarness_Test.cpp" />
     <ClCompile Include="TestHarness.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Logger\Logger.h" />
-    <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="TestDriverFactory.h" />
     <ClInclude Include="TestHarness.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

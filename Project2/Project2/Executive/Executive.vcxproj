@@ -144,14 +144,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Logger\Logger.cpp" />
-    <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp" />
+    <ClCompile Include="..\TestHarness\Logger.cpp" />
+    <ClCompile Include="..\TestHarness\TestDriverFactory.cpp" />
     <ClCompile Include="..\TestHarness\TestHarness.cpp" />
     <ClCompile Include="Executive.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Logger\Logger.h" />
-    <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h" />
+    <ClInclude Include="..\TestHarness\Logger.h" />
+    <ClInclude Include="..\TestHarness\TestDriverFactory.h" />
     <ClInclude Include="..\TestHarness\TestHarness.h" />
     <ClInclude Include="Executive.h" />
   </ItemGroup>

@@ -23,8 +23,8 @@
 #include <functional>
 #include <sstream>
 
-#include "../Logger//Logger.h"
-#include "../TestDriverFactory/TestDriverFactory.h"
+#include "Logger.h"
+#include "TestDriverFactory.h"
 
 using namespace std;
 

@@ -17,10 +17,10 @@
     <ClCompile Include="..\TestHarness\TestHarness.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp">
+    <ClCompile Include="..\TestHarness\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Logger\Logger.cpp">
+    <ClCompile Include="..\TestHarness\TestDriverFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,10 +31,10 @@
     <ClInclude Include="..\TestHarness\TestHarness.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h">
+    <ClInclude Include="..\TestHarness\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Logger\Logger.h">
+    <ClInclude Include="..\TestHarness\TestDriverFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

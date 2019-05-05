@@ -41,6 +41,8 @@ void TestHarness::addTests(string xmlTestRequest)
       startIndex = xmlTestRequest.find(startDelimiter);
       stopIndex = xmlTestRequest.find(stopDelimiter);
    }
+
+   cout << endl;
 }
 
 /******************************************************************************************************************
@@ -146,5 +148,68 @@ void TestHarness::printLevelTwoLog()
 void TestHarness::printLevelThreeLog()
 {
    logger.printLevelThreeLog();
+}
+
+/******************************************************************************************************************
+* Template: execute 
+* Notes:    This function is a template specialization of the execute routine which handles function pointers
+*           that return a boolean value which is then intepreted as the pass/fail status of the execution.
+*
+******************************************************************************************************************/
+template<>
+bool TestHarness::execute<function<bool()>>(int testNumber, function<bool()>& testCase)
+{
+   try
+   {
+      //Try to invoke callable object
+      bool status = testCase();
+      logger.logTestStatus(testNumber, status);
+      return status;
+   }
+
+   catch (std::runtime_error& e) {
+      logger.logTestStatus(testNumber, false, e.what(), "RUNTIME_ERROR");
+      return false;
+   }
+
+   catch (std::bad_cast& e) {
+      logger.logTestStatus(testNumber, false, e.what(), "BAD_CAST");
+      return false;
+   }
+
+   catch (std::bad_typeid& e) {
+      logger.logTestStatus(testNumber, false, e.what(), "BAD_TYPEID");
+      return false;
+   }
+
+   catch (std::bad_alloc& e) {
+      logger.logTestStatus(testNumber, false, e.what(), "BAD_ALLOC");
+      return false;
+   }
+
+   catch (std::out_of_range& e) {
+      logger.logTestStatus(testNumber, false, e.what(), "OUT_OF_RANGE");
+      return false;
+   }
+
+   catch (std::invalid_argument &e) {
+      logger.logTestStatus(testNumber, false, e.what(), "INVALID_ARGUMENT");
+      return false;
+   }
+
+   catch (std::logic_error &e) {
+      logger.logTestStatus(testNumber, false, e.what(), "LOGIC_ERROR");
+      return false;
+   }
+
+   catch (std::exception& e) {
+      logger.logTestStatus(testNumber, false, e.what(), "GENERAL_EXCEPTION");
+      return false;
+   }
+
+   catch (...) {
+      logger.logTestStatus(testNumber, false, "Unknown", "Unknown Exception caught");
+      return false;
+   }
 }
 

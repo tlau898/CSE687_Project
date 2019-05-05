@@ -1,40 +1,39 @@
-//
-// Created by John Schurman on 4/24/19.
-//
+#ifndef LOGGER_H
+#define LOGGER_H
 
-#ifndef TESTHARNESS_LOGGER_H
-#define TESTHARNESS_LOGGER_H
-
+//////////////////////////////////////////////////////////////////////////////////////
+// Logger.h - Defines Logger class which contains functions to log the results of   //
+//            test runs. Logs are available at three levels of verbosity. Logs      //
+//            can also be cleared.                                                  //
+// ver 1.0                                                                          //
+// Language:      Visual C++ 2010, SP1                                              //
+// Application:   Project 1 CSE 687                                                 //
+// Author:        John Schurman, Terence Lau                                        //
+//////////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <vector>
-
 #include <sstream>
 #include <iomanip>
 #include <ctime>
-using std::vector;
-using std::string;
+
+using namespace std;
+
 class Logger {
+
 public:
-    Logger()= default;
+   void printLevelOneLog();
+   void printLevelTwoLog();
+   void printLevelThreeLog();
 
-    const vector<string> getLevelOneLog();
-    const vector<string> getLevelTwoLog();
-    const vector<string> getLevelThreeLog();
-    void logTestStatus(int, bool);
-    void logTestStatus(int, bool, string, string);
-    void clear();
-
-
+   void logTestStatus(int testNumber, bool passed);
+   void logTestStatus(int testNumber, bool passed, string exMsg, string exDetail);
+   void clearlog();
 
 private:
-    vector<string>levelOneLog;
-    vector<string> levelTwoLog;
-    vector<string>levelThreeLog;
-
-    string getCurrDateTime();
-
-
+   vector<string>levelOneLog;
+   vector<string> levelTwoLog;
+   vector<string>levelThreeLog;
+   string getCurrDateTime();
 };
 
-
-#endif //TESTHARNESS_LOGGER_H
+#endif //LOGGER_H
