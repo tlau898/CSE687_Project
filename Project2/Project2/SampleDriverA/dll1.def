@@ -1,5 +1,4 @@
 LIBRARY SampleDriverA
 EXPORTS
-Test @1
-Create @2
+Create @1
 
