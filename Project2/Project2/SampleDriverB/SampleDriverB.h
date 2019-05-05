@@ -13,6 +13,7 @@ class SampleDriverB : public ITest
 {
 public:
    bool RunTest();
+   ~SampleDriverB();
 
 private:
 };

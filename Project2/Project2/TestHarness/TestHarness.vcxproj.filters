@@ -11,12 +11,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FileManager.cpp">
+    <ClCompile Include="TestHarness.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestHarness_Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Logger\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FileManager.h">
+    <ClInclude Include="TestHarness.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Logger\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

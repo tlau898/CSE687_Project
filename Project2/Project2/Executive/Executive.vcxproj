@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{4CFCF2B3-5C81-43DC-B13E-D26C51CBD2AD}</ProjectGuid>
+    <ProjectGuid>{E6E2E6B0-5A7D-48CF-8624-B8D951F20664}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>FileManager</RootNamespace>
+    <RootNamespace>Executive</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;TEST_FILEMANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
@@ -144,10 +144,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="..\Logger\Logger.cpp" />
+    <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp" />
+    <ClCompile Include="..\TestHarness\TestHarness.cpp" />
+    <ClCompile Include="Executive.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="..\Logger\Logger.h" />
+    <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h" />
+    <ClInclude Include="..\TestHarness\TestHarness.h" />
+    <ClInclude Include="Executive.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

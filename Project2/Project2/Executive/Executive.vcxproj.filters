@@ -6,19 +6,35 @@
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{c84e00b2-8cde-4958-9bd7-d2989ee553a0}</UniqueIdentifier>
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SandBox.cpp">
+    <ClCompile Include="Executive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TestHarness\TestHarness.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\TestDriverFactory\TestDriverFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Logger\Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Executive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TestHarness\TestHarness.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\TestDriverFactory\TestDriverFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Logger\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

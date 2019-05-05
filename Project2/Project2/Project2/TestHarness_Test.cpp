@@ -27,7 +27,6 @@ using namespace std;
 
 
 #include "TestHarness.h"
-#include "../FileManager/FileManager.h"
 
 #include <sstream>
 
@@ -410,8 +409,7 @@ int main()
 	//TestHarness testHarness = TestHarness();
 
 	//bool executorPassed;
-   FileManagerNS::FileManager::CheckFileExists("Test.dll");
-   FileManagerNS::FileManager::CheckFileExists("MathLibrary.dll");
+
 
 
 	vector<LPCSTR>temp1;

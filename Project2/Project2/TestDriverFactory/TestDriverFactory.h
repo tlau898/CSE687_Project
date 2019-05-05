@@ -25,7 +25,9 @@
 
 struct ITest
 {
+public:
    virtual bool RunTest() = 0;
+   virtual ~ITest() {};
 };
 
 class TestFactory
@@ -40,12 +42,6 @@ private:
    TestFactory& operator=(TestFactory const&){};
    static TestFactory* p_factInstance;
 
-};
-
-class Example : public ITest
-{
-public:
-   bool RunTest();
 };
 
 #endif

@@ -30,9 +30,6 @@
     <ClCompile Include="TestDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\FileManager\FileManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Logger.h">
@@ -45,9 +42,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestDriver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\FileManager\FileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
