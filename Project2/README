@@ -1,0 +1,7 @@
+Project 2 
+-Contains 5 projects 
+-Executive (Run this project, demonstrates TestHarness capability) 
+-TestHarness (Implements TestHarness) 
+-SampleDriverA (Test Driver DLL, defines RunTest and Create function)
+-SampleDriverB (Test Driver DLL, defines RunTest and Create function)
+-SampleDriverC (Test Driver DLL, defines RunTest and Create function)
