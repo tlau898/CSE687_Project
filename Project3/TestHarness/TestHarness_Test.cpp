@@ -202,7 +202,7 @@ function<void()> invalidArg = []() {
 ******************************************************************************************************************/
 int main()
 {
-   TestHarness testHarness = TestHarness();
+   TestHarness testHarness;
    bool executorPassed;
 
    cout << "************************************************************************" << endl;
