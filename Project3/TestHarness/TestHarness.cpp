@@ -21,10 +21,12 @@ void TestThreadProc(int tID)
    {
       Message msg(serverEP, clientEP);
       msg.name("client #" + Utilities::Converter<size_t>::toString(tID) + " is ready to test");
+      msg.attribute("testready", "");
       std::cout << "\n" + comm.name() + " posting:  " + msg.name();
       comm.postMessage(msg);
       Message rply = comm.getMessage();
       std::cout << "\n" + comm.name() + " received: " + rply.name();
+      //Reply is actually the test request, execute test request here
       ::Sleep(100);
    }
 
@@ -43,7 +45,7 @@ void TestThreadProc(int tID)
    //}
 }
 
-void MsgThreadProc()
+void MsgThreadProc(BlockingQueue<string>* testQ)
 {
    EndPoint serverEP("localhost", 9890);
    Comm comm(serverEP, "TestServer");
@@ -62,11 +64,20 @@ void MsgThreadProc()
          if (msg.contentLength() == 0)
             std::cout << "\n  " + comm.name() + " received file \"" + msg.file() + "\" from " + msg.name();
       }
+      else if (msg.containsKey("testready"))
+      {
+         rply.to(msg.from());
+         rply.from(serverEP);
+         rply.name("test request #" + Utilities::Converter<size_t>::toString(++count) + " to " + msg.from().toString() +
+               "Executing:" + testQ->deQ());
+                                                               
+         comm.postMessage(rply);
+      }
       else  // non-file message
       {
          rply.to(msg.from());
          rply.from(serverEP);
-         rply.name("server test request #" + Utilities::Converter<size_t>::toString(++count) + " to " + msg.from().toString());
+         rply.name("server reply #" + Utilities::Converter<size_t>::toString(++count) + " to " + msg.from().toString());
 
          comm.postMessage(rply);
          if (msg.command() == "stop")
@@ -84,7 +95,7 @@ TestHarness::TestHarness(int nTestThreads)
 
 void TestHarness::start()
 {
-   thread msgThread(MsgThreadProc);
+   thread msgThread(MsgThreadProc, &testQ);
    msgThread.detach();
 
    for (int i = 1; i <= numTestThreads; i++)
@@ -92,6 +103,11 @@ void TestHarness::start()
       thread testThread(TestThreadProc, i);
       testThread.detach();
    }
+}
+
+void TestHarness::add(string request)
+{
+   testQ.enQ(request);
 }
 
 /******************************************************************************************************************

@@ -39,6 +39,7 @@ public:
 
    TestHarness(int nTestThreads);
    TestHarness() : TestHarness(5) {};
+   void add(string request);
 
    void start();
 
@@ -64,7 +65,10 @@ private:
 
    template <class T>
    bool execute(int testNumber, T& testCase); //Performs execution of callable object
+
    int numTestThreads;
+   BlockingQueue<string> testQ;
+   mutex testQMutex;
 };
 
 template<class T>
