@@ -1,0 +1,4 @@
+LIBRARY SampleDriverA
+EXPORTS
+Create @1
+
