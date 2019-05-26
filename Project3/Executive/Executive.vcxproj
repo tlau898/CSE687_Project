@@ -147,11 +147,15 @@
   <ItemGroup>
     <ClCompile Include="..\TestHarness\TestDriverFactory.cpp" />
     <ClCompile Include="..\TestHarness\TestHarness.cpp" />
+    <ClCompile Include="..\TestHarness\TestLogger.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="Executive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\TestHarness\TestDriverFactory.h" />
     <ClInclude Include="..\TestHarness\TestHarness.h" />
+    <ClInclude Include="..\TestHarness\TestLogger.h" />
+    <ClInclude Include="Client.h" />
     <ClInclude Include="Executive.h" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +164,15 @@
     </ProjectReference>
     <ProjectReference Include="..\MsgPassingComm\MsgPassingComm.vcxproj">
       <Project>{6e58e051-cc07-4d7f-92a4-06a117a79ca7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SampleDriverA\SampleDriverA.vcxproj">
+      <Project>{c4aa89f3-f1d9-408e-a3f2-f31a5ed8ed48}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SampleDriverB\SampleDriverB.vcxproj">
+      <Project>{e6508aa2-bc4c-4fea-84ef-7c35d43a2ce0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SampleDriverC\SampleDriverC.vcxproj">
+      <Project>{ec63c57a-2be8-4a42-b26e-cf7b79a61b45}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Sockets\Sockets.vcxproj">
       <Project>{ca3129b8-1bf4-44c9-b116-53ec72d0bccb}</Project>

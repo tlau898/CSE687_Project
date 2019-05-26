@@ -87,10 +87,17 @@ namespace MsgPassingCommunication
     static Value attribValue(const Attribute& attr);
     bool containsKey(const Key& key);
 
-    EndPoint to();
+    EndPoint to(); //Destination
     void to(EndPoint ep);
-    EndPoint from();
+    EndPoint from(); //Source
     void from(EndPoint ep);
+    std::string author();
+    void author(const std::string& authr);
+    std::string xmlRequest(); //XML Body
+    void xmlRequest(const std::string& xmlReq);
+    std::string timeStamp(); //Time-Date
+    void timeStamp(const std::string& timeStmp);
+
     std::string name();
     void name(const std::string& nm);
     std::string command();

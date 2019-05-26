@@ -1,113 +1,228 @@
-////////////////////////////////////////////////////////////////////////////////////////
-// TestHarness.cpp - Implements TestHarness class that defines methods to add, clear  //
-//                   and invoke a list of tests. Tests are created by parsing a test  //
-//                   request and instatiating test driver objects. Test result logs   //
-//                   are held by //logger object.                                       //
-// ver 2.0                                                                            //
-// Language:      Visual C++ 2010, SP1                                                //
-// Application:   Project 1 CSE 687                                                   //
-// Author:        Terence Lau, John Schurman                                          //
-////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+// TestHarness.cpp - Implements TestHarness class that defines methods to add, clear    //
+//                   and invoke a list of tests. Tests are created by parsing a test    //
+//                   request and instatiating test driver objects. Test result logs     //
+//                   are held by testLogger object. TestHarness supports running of     //
+//                   multiple test threads by allowing a specified number of child      //
+//                   threads to run test simultaneously. Test requests are sent to      //
+//                   child threads as messages which are sent by a message server       //
+//                   thread. Users send their test requests to the message server via   //
+//                   function addTests.                                                 //
+// ver 3.0                                                                              //
+// Language:      Visual C++ 2010, SP1                                                  //
+// Application:   Project 1 CSE 687                                                     //
+// Author:        Terence Lau, John Schurman                                            //
+//////////////////////////////////////////////////////////////////////////////////////////
 #include "TestHarness.h"
 
-void TestThreadProc(int tID)
+/******************************************************************************************************************
+* Constructor: 
+* Notes:    The constructor takes in a specified number of test threads which defines how many test threads will
+*           be spawned when the start function is initiated.
+*
+******************************************************************************************************************/
+TestHarness::TestHarness(int nTestThreads)
 {
-   Comm comm(EndPoint("localhost", 9891+tID), "client" + Utilities::Converter<size_t>::toString(tID));
-   comm.start();
-   EndPoint serverEP("localhost", 9890);
-   EndPoint clientEP("localhost", 9891+tID);
-
-   //while (1)
-   {
-      Message msg(serverEP, clientEP);
-      msg.name("client #" + Utilities::Converter<size_t>::toString(tID) + " is ready to test");
-      msg.attribute("testready", "");
-      std::cout << "\n" + comm.name() + " posting:  " + msg.name();
-      comm.postMessage(msg);
-      Message rply = comm.getMessage();
-      std::cout << "\n" + comm.name() + " received: " + rply.name();
-      //Reply is actually the test request, execute test request here
-      ::Sleep(100);
-   }
-
-   Message stop;
-   stop.name("stop");
-   stop.to(serverEP);
-   stop.command("stop");
-   comm.postMessage(stop);
-
-   //while (1)
-   //{
-   //   //Send Ready Message back to TestHarness
-   //   //Wait for TestRequest
-   //   //Execute Test
-   //   //Log Result
-   //}
+   //Number of child test threads to spawn
+   numTestThreads = nTestThreads;
 }
 
-void MsgThreadProc(BlockingQueue<string>* testQ)
+/******************************************************************************************************************
+* Function: TestThreadProc
+* Notes:    This function is run by each of the child test threads that are spawned by the start function. This
+*           function communicates with the test server thread by first posting a ready message to the test harness
+*           indicating the child test thread is ready to test. The child test thread then waits for a response
+*           message from the TestHarness thread containing a xml test request. Upon receiving the xml test request
+*           the child test thread then creates and runs the test described by the test request. It then sends a 
+*           results message back to the TestHarness thread and then repeats the whole cycle again.
+*
+******************************************************************************************************************/
+void TestHarness::TestThreadProc(int tID)
 {
+   Comm comm(EndPoint("localhost", 9890+tID), "Child" + Utilities::Converter<size_t>::toString(tID));
+   comm.start();
+   EndPoint serverEP("localhost", 9890);        //Main TestHarness server end point, msg processing thread
+   EndPoint clientEP("localhost", 9890+tID);    //Child Test Thread end point
+
+   while (1)
+   {
+      //Send test ready message to message server
+      Message msg(serverEP, clientEP);
+      msg.name(comm.name() + " is ready to test");
+      msg.timeStamp(testLogger.getCurrDateTime());
+      msg.author(comm.name());
+      msg.attribute("testready", "");
+      cout << "\n" + msg.timeStamp() + " " + clientEP.toString() + " " + msg.author() + " sent msg: " + msg.name();
+      comm.postMessage(msg);
+
+      //Wait for test request message
+      Message rply = comm.getMessage();
+      cout << "\n" + msg.timeStamp() + clientEP.toString() + " " + comm.name() + " recvd test request: " + rply.xmlRequest();
+
+      //Create Test, Run Test
+      ITest* test = createTest(rply.xmlRequest());
+      string result = runTest(parseXMLRequest(rply.xmlRequest()), test) ? "PASS" : "FAIL";
+
+      //Send test result message to message server
+      Message testResult(serverEP, clientEP);
+      testResult.name(comm.name() + " Test completed Test Result: " + result);
+      testResult.timeStamp(testLogger.getCurrDateTime());
+      testResult.author(comm.name());
+      testResult.to(serverEP);
+      comm.postMessage(testResult);
+   }
+}
+
+/******************************************************************************************************************
+* Function: MsgThreadProc
+* Notes:    This function is the main TestHarness thread which is responsible for processing messages from child
+*           test threads which post test ready messages and test result messages. This thread spawns the test
+*           manager thread which waits for a testReady message and testRequest message. This allows the message 
+*           thread to not have to block and makes it free to process messages as they come in.
+*
+******************************************************************************************************************/
+void TestHarness::MsgThreadProc()
+{
+   Message msg, rply;
    EndPoint serverEP("localhost", 9890);
    Comm comm(serverEP, "TestServer");
    comm.start();
 
-   Message msg, rply;
-   rply.name("reply");
-   size_t count = 0;
+   //Spawn test handler thread, waits for a a testReady message and testRequest message
+   thread testManagerThread(&TestHarness::TestManagerProc, this, &serverEP, &comm);
+   testManagerThread.detach();
+
    while (1)
    {
+      //Print contents of incoming messages
       msg = comm.getMessage();
-      std::cout << "\n" + comm.name() + " received message: " + msg.name();
-
-      if (msg.containsKey("file"))  // is this a file message?
+      cout << "\n" + msg.timeStamp() + " " + serverEP.toString() + " " + comm.name() + 
+         " recvd msg from " + msg.from().toString() +  ": " + msg.name();
+      if (msg.containsKey("testready"))
       {
-         if (msg.contentLength() == 0)
-            std::cout << "\n  " + comm.name() + " received file \"" + msg.file() + "\" from " + msg.name();
-      }
-      else if (msg.containsKey("testready"))
-      {
-         rply.to(msg.from());
-         rply.from(serverEP);
-         rply.name("test request #" + Utilities::Converter<size_t>::toString(++count) + " to " + msg.from().toString() +
-               "Executing:" + testQ->deQ());
-                                                               
-         comm.postMessage(rply);
-      }
-      else  // non-file message
-      {
-         rply.to(msg.from());
-         rply.from(serverEP);
-         rply.name("server reply #" + Utilities::Converter<size_t>::toString(++count) + " to " + msg.from().toString());
-
-         comm.postMessage(rply);
-         if (msg.command() == "stop")
-         {
-            break;
-         }
+         //Queue up test ready message from child test thread
+         testReadyMsgs.enQ(msg);
       }
    }
 }
 
-TestHarness::TestHarness(int nTestThreads)
+/******************************************************************************************************************
+* Function: TestManagerProc
+* Notes:    This function is run as the test manager thread and spawned by the main TestHarness message processing
+*           thread. It's purpose is to free up the message processing thread from having to block on ready messages
+*           from the child test threads and test request messages from clients. This function waits for a ready 
+*           message from a child thread and a test request to come in. It will then send the test request to the
+*           child thread that sent the test ready message.
+*
+******************************************************************************************************************/
+void TestHarness::TestManagerProc(EndPoint* serverEP, Comm* comm)
 {
-   numTestThreads = nTestThreads;
+   Message testReadyMsg; //Test Request message sent to testServer
+   Message testMsg;      //Test Request message sent to child process
+
+   while (1)
+   {
+      testReadyMsg = testReadyMsgs.deQ();               //Wait for test ready msg from child threads
+      testMsg.xmlRequest(testRequests.deQ());           //Wait for test requests to come in from client
+      testMsg.timeStamp(testLogger.getCurrDateTime());  //Setup message to send to child thread
+      testMsg.author(serverEP->toString());
+      testMsg.to(testReadyMsg.from());     
+      testMsg.from(*serverEP);
+
+      cout << "\n" + testMsg.timeStamp() + " " + testMsg.author() + " " + comm->name() + 
+         " sent msg: " + testMsg.xmlRequest() + 
+         " to " + testReadyMsg.from().toString();
+
+      comm->postMessage(testMsg);                       //Pass test request along to ready child thread
+   }
 }
 
+/******************************************************************************************************************
+* Function: start
+* Notes:    This function creates the TestHarness's main message processing thread that handles requests from 
+*           clients and messages from the child test threads. This function also spawns child test threads up to
+*           the number specified by numTestThreads passed into the constructor.
+*
+******************************************************************************************************************/
 void TestHarness::start()
 {
-   thread msgThread(MsgThreadProc, &testQ);
+   //Spawn main message processing thread
+   thread msgThread(&TestHarness::MsgThreadProc, this);
    msgThread.detach();
 
    for (int i = 1; i <= numTestThreads; i++)
    {
-      thread testThread(TestThreadProc, i);
+      //Spawn child test thread
+      thread testThread(&TestHarness::TestThreadProc, this, i);
       testThread.detach();
    }
 }
 
-void TestHarness::add(string request)
+/******************************************************************************************************************
+* Function: createTest
+* Notes:    This function parses an XML test request, creates the corresponding test driver object and then
+*           returns the created object.
+*
+******************************************************************************************************************/
+ITest* TestHarness::createTest(string xmlTestRequest)
 {
-   testQ.enQ(request);
+   ITest* testDriverToAdd;
+   string testRequest;
+
+   //Ivoke Factory method to create instance of test driver
+   testRequest = parseXMLRequest(xmlTestRequest);
+   testDriverToAdd = TestFactory::Instance()->CreateTestDriver(testRequest);
+
+   if (testDriverToAdd != nullptr)
+   {
+      //Test Driver created successfully
+      cout << "\nCreated Test Driver " + testRequest;
+   }
+   else
+   {
+      //Test Driver failed to create, print error
+      cout << "Failed to load driver for " << testRequest << endl;
+   }
+   return testDriverToAdd;
+}
+
+/******************************************************************************************************************
+* Function: runTest
+* Notes:    This function executes the TestDriver's RunTest function.
+*
+******************************************************************************************************************/
+bool TestHarness::runTest(string testName, ITest* test)
+{
+   function<bool()> lambda = [test]()->bool
+   {
+      typedef bool (ITest:: * RunTest)();
+      RunTest funcPtr = &ITest::RunTest;
+      return (test->*funcPtr)();
+   };
+   return execute(testName, lambda);
+}
+
+/******************************************************************************************************************
+* Function: parseXMLRequest
+* Notes:    This function strips away the xml portion of the xmlRequest and returns the body of the request
+*
+******************************************************************************************************************/
+string TestHarness::parseXMLRequest(string xmlRequest)
+{
+   string startDelimiter = "<testelement>"; //XML
+   string stopDelimiter = "</testelement>"; //XML
+   size_t startIndex;
+   size_t stopIndex;
+   string testElementDLLName;
+
+   //Indexes used to extract info from XML
+   startIndex = xmlRequest.find(startDelimiter);
+   stopIndex = xmlRequest.find(stopDelimiter);
+
+   //Extract test driver dll name, create test
+   startIndex += startDelimiter.length();
+   testElementDLLName = xmlRequest.substr(startIndex, stopIndex - startIndex);
+   return testElementDLLName;
 }
 
 /******************************************************************************************************************
@@ -123,7 +238,7 @@ void TestHarness::addTests(string xmlTestRequest)
    string stopDelimiter = "</testelement>"; //XML
    size_t startIndex;
    size_t stopIndex;
-   string testElementDLLName;
+   string testElement;
 
    //Indexes used to extract info from XML
    startIndex = xmlTestRequest.find(startDelimiter);
@@ -132,184 +247,46 @@ void TestHarness::addTests(string xmlTestRequest)
    while ((startIndex != string::npos) && (stopIndex != string::npos))
    {
       //Extract test driver dll name, create test
-      startIndex += startDelimiter.length();
-      testElementDLLName = xmlTestRequest.substr(startIndex, stopIndex - startIndex);
-      addTest(testElementDLLName);
+      testElement = xmlTestRequest.substr(startIndex, stopIndex + stopDelimiter.length());
+      testRequests.enQ(testElement);
 
       //Remove already parsed dll name from test request, move to next
       xmlTestRequest.erase(0, stopIndex + stopDelimiter.length());
       startIndex = xmlTestRequest.find(startDelimiter);
       stopIndex = xmlTestRequest.find(stopDelimiter);
    }
-
-   cout << endl;
-}
-
-/******************************************************************************************************************
-* Function: addTest
-* Notes:    This function takes the name a test driver dll to instantiate and add to the testList. The TestFactory
-*           singleton is used to invoke the create function for the corresponding test driver object. If function
-*           fails to create test driver, error message is printed.
-*
-******************************************************************************************************************/
-void TestHarness::addTest(string testRequest)
-{
-   ITest* testDriverToAdd;
-
-   //Ivoke Factory method to create instance of test driver
-   testDriverToAdd = TestFactory::Instance()->CreateTestDriver(testRequest);
-
-   if (testDriverToAdd != nullptr)
-   {
-      //Test Driver created successfully
-      cout << "Created Test Driver " << testRequest << endl;
-      testList.emplace_back(testDriverToAdd);
-   }
-   else
-   {
-      //Test Driver failed to create, print error
-      cout << "Failed to load driver for " << testRequest << endl;
-   }
-}
-
-/******************************************************************************************************************
-* Function: clearTestList
-* Notes:    This function iterates through the testList and deletes the test driver instances that were created
-*           when adding tests. It then clears the test driver pointers from the testList.
-*
-******************************************************************************************************************/
-void TestHarness::clearTestList()
-{
-   for (auto&& test : testList)
-   {
-      //Free allocated objects
-      delete test;
-   }
-   testList.clear();
-}
-
-/******************************************************************************************************************
-* Function: runTestList
-* Notes:    This function iterates through the list of test driver objects in testList and creates a list of
-*           lambda functions corresponding to the runTest function defined by each test driver. The list of lambda
-*           functions is then invoked by executor. List of lambdas is necessary because pointers to member 
-*           function cannot be passed directly to executor.
-*
-******************************************************************************************************************/
-void TestHarness::runTestList()
-{
-   list<function<bool()>> tList;
-
-   //Create list of lambdas 
-   for (auto test : testList)
-   {
-      //Create lambda for call to test driver RunTest()
-      tList.emplace_back([test]()->bool 
-      {
-         typedef bool (ITest::*RunTest)();
-         RunTest funcPtr = &ITest::RunTest;
-         return (test->*funcPtr)(); 
-      });
-   }
-
-   //Clear log, execute tests
-   //logger.clearlog();
-   executor(tList);
 }
 
 /******************************************************************************************************************
 * Function: printLevelOneLog
-* Notes:    This function prints the level one log results stored by the //logger object. Log results are generated
+* Notes:    This function prints the level one log results stored by the testLogger object. Log results are generated
 *           when invoking runTestList and cleared on subsequent invokations.
 *
 ******************************************************************************************************************/
 void TestHarness::printLevelOneLog()
 {
-   //logger.printLevelOneLog();
+   testLogger.printLevelOneLog();
 }
 
 /******************************************************************************************************************
 * Function: printLevelTwoLog
-* Notes:    This function prints the level two log results stored by the //logger object. Log results are generated
+* Notes:    This function prints the level two log results stored by the testLogger object. Log results are generated
 *           when invoking runTestList and cleared on subsequent invokations.
 *
 ******************************************************************************************************************/
 void TestHarness::printLevelTwoLog()
 {
-   //logger.printLevelTwoLog();
+   testLogger.printLevelTwoLog();
 }
 
 /******************************************************************************************************************
 * Function: printLevelThreeLog
-* Notes:    This function prints the level three log results stored by the //logger object. Log results are generated
+* Notes:    This function prints the level three log results stored by the testLogger object. Log results are generated
 *           when invoking runTestList and cleared on subsequent invokations.
 *
 ******************************************************************************************************************/
 void TestHarness::printLevelThreeLog()
 {
-   //logger.printLevelThreeLog();
-}
-
-/******************************************************************************************************************
-* Template: execute 
-* Notes:    This function is a template specialization of the execute routine which handles function pointers
-*           that return a boolean value which is then intepreted as the pass/fail status of the execution.
-*
-******************************************************************************************************************/
-template<>
-bool TestHarness::execute<function<bool()>>(int testNumber, function<bool()>& testCase)
-{
-   try
-   {
-      //Try to invoke callable object
-      bool status = testCase();
-      //logger.logTestStatus(testNumber, status);
-      return status;
-   }
-
-   catch (std::runtime_error& e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "RUNTIME_ERROR");
-      return false;
-   }
-
-   catch (std::bad_cast& e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "BAD_CAST");
-      return false;
-   }
-
-   catch (std::bad_typeid& e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "BAD_TYPEID");
-      return false;
-   }
-
-   catch (std::bad_alloc& e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "BAD_ALLOC");
-      return false;
-   }
-
-   catch (std::out_of_range& e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "OUT_OF_RANGE");
-      return false;
-   }
-
-   catch (std::invalid_argument &e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "INVALID_ARGUMENT");
-      return false;
-   }
-
-   catch (std::logic_error &e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "LOGIC_ERROR");
-      return false;
-   }
-
-   catch (std::exception& e) {
-      //logger.logTestStatus(testNumber, false, e.what(), "GENERAL_EXCEPTION");
-      return false;
-   }
-
-   catch (...) {
-      //logger.logTestStatus(testNumber, false, "Unknown", "Unknown Exception caught");
-      return false;
-   }
+   testLogger.printLevelThreeLog();
 }
 

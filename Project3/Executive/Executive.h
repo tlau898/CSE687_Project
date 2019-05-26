@@ -12,6 +12,8 @@
 #include <string>
 #include <list>
 #include "../TestHarness/TestHarness.h"
+#include "../Logger/Logger.h"
+#include "Client.h"
 
 using namespace std;
 

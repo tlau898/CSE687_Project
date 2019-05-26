@@ -107,6 +107,54 @@ void Message::name(const std::string& nm)
 {
   attributes_["name"] = nm;
 }
+//----< get author attribute >-------------------------------------------
+
+std::string Message::author()
+{
+   if (containsKey("author"))
+   {
+      return attributes_["author"];
+   }
+   return "";
+}
+//----< set author attribute >-------------------------------------------
+
+void Message::author(const std::string& authr)
+{
+   attributes_["author"] = authr;
+}
+//----< get xmlRequest attribute >-------------------------------------------
+
+std::string Message::xmlRequest()
+{
+   if (containsKey("xmlRequest"))
+   {
+      return attributes_["xmlRequest"];
+   }
+   return "";
+}
+//----< set xmlRequest attribute >-------------------------------------------
+
+void Message::xmlRequest(const std::string& xmlReq)
+{
+   attributes_["xmlRequest"] = xmlReq;
+}
+//----< get timeStamp attribute >-------------------------------------------
+
+std::string Message::timeStamp()
+{
+   if (containsKey("timeStamp"))
+   {
+      return attributes_["timeStamp"];
+   }
+   return "";
+}
+//----< set timeStamp attribute >-------------------------------------------
+
+void Message::timeStamp(const std::string& timeStmp)
+{
+   attributes_["timeStamp"] = timeStmp;
+}
 //----< get command attribute >----------------------------------------
 
 std::string Message::command()
