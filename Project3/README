@@ -1,0 +1,12 @@
+Project 3 
+-Contains 10 projects 
+-Executive (Run this project, demonstrates TestHarness capability) 
+-TestHarness (Implements TestHarness) 
+-SampleDriverA (Test Driver DLL, defines RunTest and Create function)
+-SampleDriverB (Test Driver DLL, defines RunTest and Create function)
+-SampleDriverC (Test Driver DLL, defines RunTest and Create function)
+-SampleDriverD (Test Driver DLL, defines RunTest and Create function)
+-Sockets (Professor's Socket implementation from repo)
+-Utilities (Professor's Utilities implementation from repo)
+-Message (Modified from Professor's Message implementation from repo
+-MsgPassingComm (Professor's Channel implementation from repo)
