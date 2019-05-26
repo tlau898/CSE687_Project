@@ -15,7 +15,7 @@ Project 1 <br />
   -SampleDriverB  (Test Driver DLL, defines RunTest and Create function)<br />
   -SampleDriverC  (Test Driver DLL, defines RunTest and Create function)<br />
   
-    Project 3 <br />
+  Project 3 <br />
 -Contains 10 projects <br />
   -Executive      (Run this project, demonstrates TestHarness capability) <br />
   -TestHarness    (Implements TestHarness) <br />
