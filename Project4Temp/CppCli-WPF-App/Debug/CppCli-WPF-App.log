@@ -1,0 +1,4 @@
+﻿  Window.cpp
+  Window.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
+  Window.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  CppCli-WPF-App.vcxproj -> C:\Users\jschu\proj4Int\Project4Temp\Debug\CppCli-WPF-App.exe

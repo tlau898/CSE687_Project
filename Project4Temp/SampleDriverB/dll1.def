@@ -1,0 +1,4 @@
+LIBRARY SampleDriverB
+EXPORTS
+Create @1
+
