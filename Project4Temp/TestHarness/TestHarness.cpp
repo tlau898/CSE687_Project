@@ -25,6 +25,8 @@ TestHarness::TestHarness(int nTestThreads)
 {
    //Number of child test threads to spawn
    numTestThreads = nTestThreads;
+
+   
 }
 
 /******************************************************************************************************************
@@ -61,7 +63,7 @@ void TestHarness::TestThreadProc(int tID)
       Message rply = comm.getMessage();
 	 
 	 
-      cout << "\n" + msg.timeStamp() + clientEP.toString() + " " + comm.name() + " recvd test request: " +
+      cout << "\n" + msg.timeStamp() + clientEP.toString() + " " + comm.name() + " RECVD TEST REQUEST: " +
 		  rply.xmlRequest();
 
       //Create Test, Run Test
@@ -70,10 +72,28 @@ void TestHarness::TestThreadProc(int tID)
 
       //Send test result message to message server
       Message testResult(serverEP, clientEP);
+
+	  
+
+	  //parse DLL name 
+	  std::string temp = parseXMLRequest(rply.xmlRequest());
+	  int pos = temp.find_last_of('\\');
+	  std::string dll = temp.substr(temp.find_last_of('\\')+1  , temp.length() - pos-1);
+	  //std::cout << "\n\n\n\n\nATTEMPTED DLL NAME: " << dll << std::endl;
+
+
+
       testResult.name(comm.name() + " Test completed Test Result: " + result);
+	  testResult.dllName(dll);
       testResult.timeStamp(testLogger.getCurrDateTime());
       testResult.author(comm.name());
       testResult.to(serverEP);
+
+
+	  testResult.attribute("resultready", "");
+
+	  testResult.testResult( result);
+
       comm.postMessage(testResult);
    }
 }
@@ -104,8 +124,15 @@ void TestHarness::MsgThreadProc()
       //Print contents of incoming messages
       msg = comm.getMessage();
 	
+	  //This is where the test results are printed
+	  //dont go into if block if they are not test ready 
       cout << "\n" + msg.timeStamp() + " " + serverEP.toString() + " " + comm.name() + 
          " recvd msg from " + msg.from().toString() +  ": " + msg.name();
+	  if (msg.containsKey("resultready")) {
+		  std::thread aThread(&TestHarness::storeResult, this, msg);
+		  aThread.detach();
+	  }
+	 
       if (msg.containsKey("testready"))
       {
          //Queue up test ready message from child test thread
@@ -136,6 +163,7 @@ void TestHarness::TestManagerProc(EndPoint* serverEP, Comm* comm)
 	  std::cout << "Test manager" << std::endl;
 	  std::string msg = testRequests.deQ();
 	 
+	 
       testMsg.xmlRequest(msg);  //Wait for test requests to come in from client
 	  
       testMsg.timeStamp(testLogger.getCurrDateTime());  //Setup message to send to child thread
@@ -163,6 +191,9 @@ void TestHarness::start()
    //Spawn main message processing thread
    thread msgThread(&TestHarness::MsgThreadProc, this);
    msgThread.detach();
+   //spawn off a thread to sit on blocking queue waiting for test results to come in
+   thread resultThread(&TestHarness::forewardResult, this);
+   resultThread.detach();
 
    for (int i = 1; i <= numTestThreads; i++)
    {
@@ -325,5 +356,38 @@ void TestHarness::printLevelTwoLog()
 void TestHarness::printLevelThreeLog()
 {
    testLogger.printLevelThreeLog();
+}
+
+
+void TestHarness::storeResult(Message m) {
+	std::cout << "Able to store the result" << std::endl;
+	results.enQ(m);
+}
+void TestHarness::forewardResult() {
+
+	//need to send this result to MockChannel
+
+
+	EndPoint returnResult("localhost", 4040);
+	Comm comm(returnResult, "OutsideServer");
+	comm.start();
+
+	EndPoint channelEP("localhost", 4000);
+	
+
+	while (1) {
+		Message m = results.deQ();
+		std::cout << "\n\n\n\n\nTHE RETURN RESULT GOT DEQUEUED!!!" << std::endl;
+		m.to(channelEP);
+		m.from(returnResult);
+		comm.postMessage(m);
+		//std::thread aThread(&TestHarness::returnResult, this, m);
+		//aThread.detach();
+	}
+}
+
+std::string TestHarness::returnResult(Message msg) {
+	
+	return msg.dllName();
 }
 

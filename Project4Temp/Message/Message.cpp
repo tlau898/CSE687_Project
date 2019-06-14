@@ -92,7 +92,16 @@ void Message::from(EndPoint ep)
   attributes_["from"] = ep.toString();
 }
 //----< get name attribute >-------------------------------------------
-
+void Message::dllName(const std::string& dllname_) {
+	attributes_["dll"] = dllname_;
+}
+std::string Message::dllName() {
+	if (containsKey("dll"))
+	{
+		return (attributes_["dll"]);
+	}
+	return "";
+}
 std::string Message::name()
 {
   if (containsKey("name"))
@@ -264,6 +273,21 @@ std::ostream& Message::show(std::ostream& out)
   return out;
 }
 //----< test stub >----------------------------------------------------
+
+//get test result
+std::string Message::testResult() {
+
+	if (containsKey("testresult"))
+	{
+		return attributes_["testresult"];
+	}
+	return "";
+
+}
+//set the test result
+void Message::testResult(const std::string& testres) {
+	attributes_["testresult"] = testres;
+}
 
 #ifdef TEST_MESSAGE
 

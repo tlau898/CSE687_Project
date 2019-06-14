@@ -1,4 +1,3 @@
 ﻿  MockChannel.cpp
-C:\Users\jschu\proj4Int\Project4Temp\TestHarness\TestHarness.cpp(284): warning C4018: '<': signed/unsigned mismatch
-     Creating library C:\Users\jschu\proj4Int\Project4Temp\Debug\MockChannel.lib and object C:\Users\jschu\proj4Int\Project4Temp\Debug\MockChannel.exp
+C:\Users\jschu\proj4Int\Project4Temp\TestHarness\TestHarness.cpp(315): warning C4018: '<': signed/unsigned mismatch
   MockChannel.vcxproj -> C:\Users\jschu\proj4Int\Project4Temp\Debug\MockChannel.dll

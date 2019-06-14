@@ -61,6 +61,8 @@ public:
    void printLevelOneLog();                     //Print last results of runTestList, lvl1
    void printLevelTwoLog();                     //Print last results of runTestList, lvl2
    void printLevelThreeLog();                   //Print last results of runTestList, lvl3
+
+   std::string returnResult(Message m);
                                                             
 private:                                                                                            
    template <class T>                                       
@@ -68,13 +70,22 @@ private:
    void MsgThreadProc();                                    //Main thread function to handle messages
    void TestThreadProc(int tID);                            //Test thread function to execute tests
    void TestManagerProc(EndPoint* serverEP, Comm* comm);    //Test handler thread function, waits on tests/requests
-   string parseXMLRequest(string xmlRequest);               //Extracts body of xmlRequest 
+   string parseXMLRequest(string xmlRequest);  //Extracts body of xmlRequest 
+
+   void storeResult(Message m);
+   void forewardResult();
            
    int numTestThreads = 5;                                      //Number of child test threadss
    BlockingQueue<string> testRequests;                      //Test Request Queue
+   
+   BlockingQueue<Message> results;
    BlockingQueue<Message> testReadyMsgs;                    //Test Ready Message Queue
+
    list<ITest*> testList;                                   //Holds List of tests to be executed
    TestLogger testLogger;                                   //Performs test logging functions
+
+
+
 
 };
 

@@ -98,6 +98,9 @@ namespace MsgPassingCommunication
     std::string timeStamp(); //Time-Date
     void timeStamp(const std::string& timeStmp);
 
+	void dllName(const std::string& dllname_);
+	std::string dllName();
+
     std::string name();
     void name(const std::string& nm);
     std::string command();
@@ -110,6 +113,9 @@ namespace MsgPassingCommunication
     std::string toString();
     static Message fromString(const std::string& src);
     std::ostream& show(std::ostream& out = std::cout);
+
+	void testResult(const std::string& res);
+	std::string testResult();
 
   private:
     Attributes attributes_;

@@ -32,10 +32,14 @@
 #include "../TestHarness/TestDriverFactory.h"
 #include "../TestHarness/TestDriverFactory.cpp"
 
+#include <sys/types.h>
+#include <stdlib.h>
+#include <sys/types.h>
 
 using BQueue = BlockingQueue < std::string >;
 using cln = Client;
 SocketSystem ss;
+static TestHarness* tHarness = nullptr;
 
 //Will have to change the name of testharness eventually 
 class Clint : public iClient {
@@ -120,9 +124,11 @@ public:
   void stop();
 private:
   std::thread thread_;
+  std::thread resultReciever_;
   ISendr* pISendr_;
   IRecvr* pIRecvr_;
   iClient* pIclient_;
+  void sendMsg();
   bool stop_ = false;
 };
 
@@ -136,12 +142,20 @@ MockChannel::MockChannel(ISendr* pSendr, IRecvr* pRecvr, iClient* testHarness)
 
 void MockChannel::start()
 {
+	
   std::cout << "\n  MockChannel starting up";
   thread_ = std::thread(
     [this] {
-    Sendr* pSendr = dynamic_cast<Sendr*>(pISendr_);
-    Recvr* pRecvr = dynamic_cast<Recvr*>(pIRecvr_);
-	Clint* pTestHarness = dynamic_cast<Clint*>(pIclient_);
+		  Sendr* pSendr = dynamic_cast<Sendr*>(pISendr_);
+		  Recvr* pRecvr = dynamic_cast<Recvr*>(pIRecvr_);
+		  Clint* pTestHarness = dynamic_cast<Clint*>(pIclient_);
+
+
+		  EndPoint channelSenderEP("localhost", 4040);
+
+		  Comm comm(channelSenderEP, "channelSenderEP");
+		  comm.start();
+   
     if (pSendr == nullptr || pRecvr == nullptr || pTestHarness == nullptr)
     {
       std::cout << "\n  failed to start Mock Channel\n\n";
@@ -165,14 +179,69 @@ void MockChannel::start()
 	  std::string testRequest = startDelimiter + msg + stopDelimiter;
 
 	  pTestHarness->addTest(testRequest);
+	  Message m = comm.getMessage();
+
+	  
+
+	  std::string messageToScreen;
+	  messageToScreen += m.timeStamp();
+	  messageToScreen += ' ';
+	  messageToScreen += m.dllName();
+	  messageToScreen += ' ';
+	  messageToScreen += m.testResult();
+
 	
 	  //cln->AddTests(msg);
       std::cout << "\n  channel enQing message";
-      recvQ.enQ(msg);
+      recvQ.enQ(messageToScreen);
     }
     std::cout << "\n  Server stopping\n\n";
   });
+
+
+  resultReciever_ = std::thread(
+	  [this] {
+		  BlockingQueue<Message> bQ;
+		  EndPoint channelEP("localhost", 4000);
+
+		  EndPoint channelSenderEP("localhost", 4040);
+		  
+		  Comm comm(channelEP, "channelEP");
+		  comm.start();
+		  
+		  
+		  while (1) {
+			
+			  Message m = comm.getMessage();
+			  m.to(channelSenderEP);
+			  comm.postMessage(m);
+
+		  }
+	  });
+
 }
+void MockChannel::sendMsg() {
+
+}
+
+
+std::string formatMessage( Message& m) {
+	
+	std::stringstream format;
+	//format >> m.timeStamp() >> " " >> m.dllName() >> " " >> m.testResult;
+	std::string s; 
+	s += m.timeStamp();
+	s += ' ';
+	s += m.dllName();
+	s += ' ';
+	s += m.testResult();
+
+	return s;
+
+}
+
+
+
 //----< signal server thread to stop >---------------------------------------
 
 void MockChannel::stop() { stop_ = true; }
