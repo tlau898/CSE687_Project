@@ -28,8 +28,8 @@ Project 1 <br />
   -Message        (Modified from Professor's Message implementation from repo<br />
   -MsgPassingComm (Professor's Channel implementation from repo)<br />
   
-    Project 4 <br />
--Contains 10 projects <br />
+  Project 4 <br />
+-Contains 12 projects <br />
   -CppCli-WPF-App (Run this project, demonstrates GUI+TestHarness capability <br />
   -MockChannel    (Provide messaging between GUI and TestHarness <br />
   -Executive      (Demonstrates TestHarness capability) <br />
