@@ -1,5 +1,12 @@
 #ifndef TESTHARNESS_H
 #define TESTHARNESS_H
+
+#ifdef IN_DLL
+#define DLL_DECL __declspec(dllexport)
+#else
+#define DLL_DECL __declspec(dllimport)
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // TestHarness.h - Implements TestHarness class that defines methods to add, clear    //
 //                 and invoke a list of tests. Tests are created by parsing a test    //
@@ -55,7 +62,7 @@ public:
    bool runTest(string testName, ITest* test);  //Run testdriver object, log result
    void start();                                //Start child test threads and main msg thread
    void addTests(string xmlTestRequest);        //Parse XML request, create tests TODEL
-   void addTests(Message xmlTestRequestMsg);
+   void addTests(Message xmlTestRequestMsg);    //Add Tests based on message from Client
    void printLevelOneLog();                     //Print last results of runTestList, lvl1
    void printLevelTwoLog();                     //Print last results of runTestList, lvl2
    void printLevelThreeLog();                   //Print last results of runTestList, lvl3
@@ -75,7 +82,6 @@ private:
    BlockingQueue<Message> testReqMsgs;
    list<ITest*> testList;                                   //Holds List of tests to be executed
    TestLogger testLogger;                                   //Performs test logging functions
-
 };
 
 template<class T>

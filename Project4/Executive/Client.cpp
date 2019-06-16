@@ -23,6 +23,10 @@ Client::Client(TestHarness* testHarness)
    clientEP = new EndPoint("localhost", clientPort);
    commChan = new Comm(*clientEP, "Client" + Utilities::Converter<size_t>::toString(clientCnt));
 
+}
+
+void Client::Start()
+{
    thread msgThread(&Client::MsgThreadProc, this, clientCnt);
    msgThread.detach();
 }
@@ -48,8 +52,9 @@ void Client::MsgThreadProc(int cID)
    while (1)
    {
       msg = commChan->getMessage();
-      cout << "\n" + msg.timeStamp() + " " + serverEP->toString() + " " + commChan->name() +
-         " recvd msg from " + msg.from().toString() + ": " + msg.name();
+      MsgQueue.enQ(msg.timeStamp() + " " + msg.to().toString() + " " + commChan->name() +
+         " recvd msg from " + msg.from().toString() + ": " + msg.name());
+
    }
 }
 
@@ -57,7 +62,7 @@ void Client::SendRequest(string xmlTestRequest)
 {
    //Send test ready message to message server
    Message msg(*serverEP, *clientEP);
-   msg.name(commChan->name() + " sends its regards");
+   msg.name(commChan->name() + " sent test request");
    msg.timeStamp(TestLogger::getCurrDateTime());
    msg.author(commChan->name());
    msg.attribute("xmlTestRequest", xmlTestRequest);

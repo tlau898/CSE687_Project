@@ -18,6 +18,8 @@ public:
    void AddTests(string xmlTestRequest);    //Post test requests
    void SendRequest(string xmlTestRequest);
    void MsgThreadProc(int cID);
+   void Start();
+   BlockingQueue<string> MsgQueue;
 
 private:
    TestHarness* tHarness;

@@ -13,6 +13,7 @@
 // Application:   Project 1 CSE 687                                                     //
 // Author:        Terence Lau, John Schurman                                            //
 //////////////////////////////////////////////////////////////////////////////////////////
+#define IN_DLL
 #include "TestHarness.h"
 
 /******************************************************************************************************************
@@ -66,7 +67,7 @@ void TestHarness::TestThreadProc(int tID)
       //Send test result message to message server
       Message testResult(serverEP, clientEP);
       testResult.attribute("testResult", result);
-      testResult.name(comm.name() + " Test completed Test Result: " + result);
+      testResult.name(parseXMLRequest(rply.xmlTestRequest()) + " Test: " + result);
       testResult.timeStamp(testLogger.getCurrDateTime());
       testResult.author(comm.name());
       testResult.to(serverEP);
@@ -106,7 +107,6 @@ void TestHarness::MsgThreadProc()
       }
       else if (msg.containsKey("xmlTestRequest"))
       {
-         //testReqMsgs.enQ(msg);
          //turn xml request into multiple single test req msgs
          this->addTests(msg);
       }
@@ -115,7 +115,7 @@ void TestHarness::MsgThreadProc()
          //Send test ready message to message server
          EndPoint clientEP("localhost", 8891);
          Message resultMsg(clientEP, serverEP);
-         resultMsg.name(comm.name() + " " + msg.testResult());
+         resultMsg.name(msg.name());
          resultMsg.timeStamp(TestLogger::getCurrDateTime());
          resultMsg.author(comm.name());
          resultMsg.to(clientEP);
@@ -141,34 +141,25 @@ void TestHarness::TestManagerProc(EndPoint* serverEP, Comm* comm)
    while (1)
    {
       testReadyMsg = testReadyMsgs.deQ();               //Wait for test ready msg from child threads
-      testMsg = testReqMsgs.deQ();
-      //testMsg.xmlRequest(testRequests.deQ());           //Wait for test requests to come in from client
+      testMsg = testReqMsgs.deQ();                      //Wait for test request message from client
       testMsg.timeStamp(testLogger.getCurrDateTime());  //Setup message to send to child thread
-      //testMsg.author(serverEP->toString());
       testMsg.to(testReadyMsg.from());
-      //testMsg.from(*serverEP);
 
       cout << "\n" + testMsg.timeStamp() + " " + testMsg.author() + " " + comm->name() +
          " sent msg: " + testMsg.xmlTestRequest() +
          " to " + testReadyMsg.from().toString();
 
-      //comm->postMessage(testMsg);                       //Pass test request along to ready child thread
-
-      //testReadyMsg = testReadyMsgs.deQ();               //Wait for test ready msg from child threads
-      //testMsg.xmlRequest(testRequests.deQ());           //Wait for test requests to come in from client
-      //testMsg.timeStamp(testLogger.getCurrDateTime());  //Setup message to send to child thread
-      //testMsg.author(serverEP->toString());
-      //testMsg.to(testReadyMsg.from());     
-      //testMsg.from(*serverEP);
-
-      //cout << "\n" + testMsg.timeStamp() + " " + testMsg.author() + " " + comm->name() + 
-      //   " sent msg: " + testMsg.xmlRequest() + 
-      //   " to " + testReadyMsg.from().toString();
-
       comm->postMessage(testMsg);                       //Pass test request along to ready child thread
    }
 }
 
+/******************************************************************************************************************
+* Function: addTests
+* Notes:    This function takes a Message corresponding to a test request and parses it into individual test 
+*           request messages for each test element parsed from the Message. The individual test request messages
+*           are enqueued in the testReqMsg queue. 
+*
+******************************************************************************************************************/
 void TestHarness::addTests(Message xmlTestRequestMsg)
 {
    string startDelimiter = "<testelement>"; //XML
@@ -192,7 +183,6 @@ void TestHarness::addTests(Message xmlTestRequestMsg)
       testElement = xmlReq.substr(startIndex, stopIndex + stopDelimiter.length());
       testRequestMsg.attribute("xmlTestRequest", testElement);
       testReqMsgs.enQ(testRequestMsg);
-      //testRequests.enQ(testElement);
 
       //Remove already parsed dll name from test request, move to next
       xmlReq.erase(0, stopIndex + stopDelimiter.length());
